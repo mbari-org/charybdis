@@ -1,4 +1,6 @@
-# Helidon Quickstart SE Example
+# charybdis
+
+Provides fixed endpoints of M3 annotation data used in publication. This allows reliable URL that can be published along with papers.
 
 This project implements a simple Hello World REST service using Helidon SE.
 
