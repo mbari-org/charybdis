@@ -94,6 +94,17 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>bintray-hohonuuli-maven</id>
+            <name>bintray</name>
+            <url>https://dl.bintray.com/hohonuuli/maven</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
