@@ -15,7 +15,7 @@ docker build --build-arg BUILD_DATE=$BUILD_DATE \
              -f Dockerfile . && \
   docker push portal.shore.mbari.org:5000/portal/charybdis
 
-ssh "brian@ione.shore.mbari.org" << 'ENDSSH'
+ssh "brian@ione.mbari.org" << 'ENDSSH'
   docker pull portal.shore.mbari.org:5000/portal/charybdis
   docker stop charybdis
   docker rm -f charybdis
