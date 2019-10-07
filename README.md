@@ -2,11 +2,10 @@
 
 Provides fixed endpoints of M3 annotation data used in publication. This allows reliable URL that can be published along with papers.
 
-This project implements a simple Hello World REST service using Helidon SE.
 
 ## Build and run
 
-With JDK8+
+With JDK11+
 ```bash
 mvn package
 java -jar target/charybdis.jar
@@ -15,16 +14,7 @@ java -jar target/charybdis.jar
 ## Exercise the application
 
 ```
-curl -X GET http://localhost:8080/greet
-{"message":"Hello World!"}
-
-curl -X GET http://localhost:8080/greet/Joe
-{"message":"Hello Joe!"}
-
-curl -X PUT -H "Content-Type: application/json" -d '{"greeting" : "Hola"}' http://localhost:8080/greet/greeting
-
-curl -X GET http://localhost:8080/greet/Jose
-{"message":"Hola Jose!"}
+curl -X GET http://localhost:8080/n0
 ```
 
 ## Try health and metrics
