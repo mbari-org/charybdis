@@ -1,6 +1,7 @@
 package org.mbari.charybdis.services;
 
 import io.helidon.webserver.Routing.Rules;
+import io.helidon.common.http.MediaType;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
 import io.helidon.webserver.Service;
@@ -29,14 +30,11 @@ public class Kakani2019Nature implements Service {
 
   private void defaultHandler(ServerRequest request, ServerResponse response) {
     // Get annotations, then get media, then package them together
+    response.headers().contentType(MediaType.APPLICATION_JSON);
     annosaurusUtil.findByLinkNameAndLinkValue("comment", "Nature20190609559")
-        .thenApply(as -> vampireSquidUtil.findMediaForAnnotations(as)
-                .thenApply(ms -> new DataGroup(as, ms))
-                .thenApply(obj -> annosaurusUtil.getGson().toJson(obj))
-                .thenAccept(response::send));
+        .thenApply(as -> vampireSquidUtil.findMediaForAnnotations(as).thenApply(ms -> new DataGroup(as, ms))
+            .thenApply(obj -> annosaurusUtil.getGson().toJson(obj)).thenAccept(response::send));
 
   }
-
-
 
 }
