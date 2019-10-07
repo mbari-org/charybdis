@@ -32,9 +32,13 @@ public class Kakani2019Nature implements Service {
     // Get annotations, then get media, then package them together
     response.headers().contentType(MediaType.APPLICATION_JSON);
     annosaurusUtil.findByLinkNameAndLinkValue("comment", "Nature20190609559")
-        .thenApply(as -> vampireSquidUtil.findMediaForAnnotations(as).thenApply(ms -> new DataGroup(as, ms))
-            .thenApply(obj -> annosaurusUtil.getGson().toJson(obj)).thenAccept(response::send));
+        .thenApply(as -> vampireSquidUtil.findMediaForAnnotations(as)
+                .thenApply(ms -> new DataGroup(as, ms))
+                .thenApply(obj -> annosaurusUtil.getGson().toJson(obj))
+                .thenAccept(response::send));
 
   }
+
+
 
 }
