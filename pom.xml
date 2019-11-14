@@ -27,7 +27,7 @@
     </parent>
     <groupId>org.mbari</groupId>
     <artifactId>charybdis</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>${project.artifactId}</name>
 
     <properties>
@@ -70,7 +70,12 @@
         <dependency>
             <groupId>org.mbari.m3</groupId>
             <artifactId>org.mbari.vars.services</artifactId>
-            <version>0.3.9</version>
+            <version>0.3.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mbari.m3</groupId>
+            <artifactId>org.mbari.vars.core</artifactId>
+            <version>0.3.16</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

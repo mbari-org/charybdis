@@ -10,7 +10,6 @@ import org.mbari.vars.services.model.Media;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +50,15 @@ public class VampireSquidUtil {
         return AsyncUtils.collectAll(mediaUuids, service::findByUuid)
                 .exceptionally( e -> {
                     log.log(Level.WARNING, e, () -> "Failed to fetch media");
+                    return Collections.emptyList();
+                })
+                .thenApply(ArrayList::new);
+    }
+
+    public CompletableFuture<List<Media>> findMediaByVideoSequenceName(String videoSequencename) {
+        return service.findByVideoSequenceName(videoSequencename)
+                .exceptionally(e -> {
+                    log.log(Level.WARNING, e, () -> "Failed to fetch media for " + videoSequencename);
                     return Collections.emptyList();
                 })
                 .thenApply(ArrayList::new);

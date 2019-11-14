@@ -30,6 +30,7 @@ import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerConfiguration;
 import io.helidon.webserver.WebServer;
 import org.mbari.charybdis.services.AnnosaurusUtil;
+import org.mbari.charybdis.services.SimpleQueryService;
 import org.mbari.charybdis.services.Kakani2019Nature;
 import org.mbari.charybdis.services.VampireSquidUtil;
 
@@ -108,6 +109,7 @@ public final class Main {
         var annosaurus = new AnnosaurusUtil(config);
         var vampireSquid = new VampireSquidUtil(config);
         var n0 = new Kakani2019Nature(annosaurus, vampireSquid);
+        var diveService = new SimpleQueryService(annosaurus, vampireSquid);
 
 
         return Routing.builder()
@@ -116,6 +118,7 @@ public final class Main {
                 .register(health)                   // Health at "/health"
                 .register(metrics)                  // Metrics at "/metrics"
                 .register("/n0", n0)
+                .register("/query", diveService)
                 .build();
     }
 

@@ -14,7 +14,7 @@ docker build --build-arg BUILD_DATE=$BUILD_DATE \
              -f Dockerfile . && \
   docker push mbari/charybdis
 
-ssh "brian@ione.mbari.org" << 'ENDSSH'
+ssh "$USER@ione.mbari.org" << 'ENDSSH'
   docker pull mbari/charybdis
   docker stop charybdis
   docker rm -f charybdis
@@ -23,6 +23,20 @@ ssh "brian@ione.mbari.org" << 'ENDSSH'
     -e ANNOTATION_SERVICE_URL="http://ione.mbari.org:8100/anno/v1" \
     -e ANNOTATION_SERVICE_TIMEOUT="PT10S" \
     -e MEDIA_SERVICE_URL="http://ione.mbari.org:8200/vam/v1" \
+    -e MEDIA_SERVICE_TIMEOUT="PT10S" \
+    --restart unless-stopped \
+    mbari/charybdis
+ENDSSH
+
+ssh "$USER@quasar.shore.mbari.org" << 'ENDSSH'
+  docker pull mbari/charybdis
+  docker stop charybdis
+  docker rm -f charybdis
+  docker run -d --name=charybdis \
+    -p 8300:8080 \
+    -e ANNOTATION_SERVICE_URL="http://m3.shore.mbari.org/anno/v1" \
+    -e ANNOTATION_SERVICE_TIMEOUT="PT20S" \
+    -e MEDIA_SERVICE_URL="http://m3.shore.mbari.org/vam/v1" \
     -e MEDIA_SERVICE_TIMEOUT="PT10S" \
     --restart unless-stopped \
     mbari/charybdis
