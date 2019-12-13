@@ -70,12 +70,12 @@
         <dependency>
             <groupId>org.mbari.m3</groupId>
             <artifactId>org.mbari.vars.services</artifactId>
-            <version>0.3.16</version>
+            <version>0.3.17</version>
         </dependency>
         <dependency>
             <groupId>org.mbari.m3</groupId>
             <artifactId>org.mbari.vars.core</artifactId>
-            <version>0.3.16</version>
+            <version>0.3.17</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
