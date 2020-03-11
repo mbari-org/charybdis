@@ -122,6 +122,7 @@ public class AnnosaurusUtil {
             var pager = countByConcept(concept).thenApply(conceptCount -> {
                 return new Pager<List<Annotation>>((limit, offset) -> {
                     try {
+                        // TODO sort annotations by time?
                         var annos =  service.findByConcept(concept, limit, offset, true)
                                 .get(timeout.toMillis(), TimeUnit.MILLISECONDS);
                         log.info("Found " + annos.size() + " annotations");

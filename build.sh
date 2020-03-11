@@ -21,7 +21,7 @@ ssh "$USER@ione.mbari.org" << 'ENDSSH'
   docker run -d --name=charybdis \
     -p 8300:8080 \
     -e ANNOTATION_SERVICE_URL="http://ione.mbari.org:8100/anno/v1" \
-    -e ANNOTATION_SERVICE_TIMEOUT="PT10S" \
+    -e ANNOTATION_SERVICE_TIMEOUT="PT20S" \
     -e MEDIA_SERVICE_URL="http://ione.mbari.org:8200/vam/v1" \
     -e MEDIA_SERVICE_TIMEOUT="PT10S" \
     --restart unless-stopped \
