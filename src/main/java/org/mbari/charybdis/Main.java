@@ -23,8 +23,8 @@ import java.util.logging.LogManager;
 import io.helidon.config.Config;
 import io.helidon.health.HealthSupport;
 import io.helidon.health.checks.HealthChecks;
-import io.helidon.media.jsonb.server.JsonBindingSupport;
-import io.helidon.media.jsonp.server.JsonSupport;
+import io.helidon.media.jsonb.JsonbSupport;
+import io.helidon.media.jsonp.JsonpSupport;
 import io.helidon.metrics.MetricsSupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerConfiguration;
@@ -66,11 +66,11 @@ public final class Main {
         // By default this will pick up application.yaml from the classpath
         Config config = Config.create();
 
-        // Get webserver config from the "server" section of application.yaml
-        ServerConfiguration serverConfig =
-                ServerConfiguration.create(config.get("server"));
-
-        WebServer server = WebServer.create(serverConfig, createRouting(config));
+        WebServer server = WebServer.builder(createRouting(config))
+                .config(config.get("server"))
+                .addMediaSupport(JsonpSupport.create())
+                .addMediaSupport(JsonbSupport.create())
+                .build();
 
         // Try to start the server. If successful, print some info and arrange to
         // print a message at shutdown. If unsuccessful, print the exception.
@@ -113,8 +113,6 @@ public final class Main {
 
 
         return Routing.builder()
-                .register(JsonSupport.create())
-                .register(JsonBindingSupport.create())
                 .register(health)                   // Health at "/health"
                 .register(metrics)                  // Metrics at "/metrics"
                 .register("/n0", n0)

@@ -31,7 +31,6 @@ public class SimpleQueryService implements Service {
     public SimpleQueryService(AnnosaurusUtil annosaurusUtil, VampireSquidUtil vampireSquidUtil) {
         this.annosaurusUtil = annosaurusUtil;
         this.vampireSquidUtil = vampireSquidUtil;
-
     }
 
     @Override
