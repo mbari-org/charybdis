@@ -39,3 +39,13 @@ Example without annotations:
 Example with annotations:
 
 <http://m3.shore.mbari.org/references/query/file/D1153_20190615T144237Z_prores.mov>
+
+## Static-ish datasets
+
+These endpoints provide datasets that were used for publications. Note that this data is "live"; changes/updates to annotations in VARS over time will be reflected in this data.
+
+### [Revealing enigmatic mucus structures in the deep sea using DeepPIV](https://www.nature.com/articles/s41586-020-2345-2)
+
+<http://m3.shore.mbari.org/references/n0>
+
+The static data set can be found at <https://data.mbari.org/products/vars/references/Kakani_Nature20190609559.json>
