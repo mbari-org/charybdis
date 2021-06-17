@@ -1,6 +1,6 @@
 # Charybdis
 
-Charybdis is a REST Server that provides convenience methods for accessing video and annotation data from M3/VARS. 
+[Charybdis](https://bitbucket.org/mbari/charybdis) is a REST Server that provides convenience methods for accessing video and annotation data from M3/VARS. 
 
 ## API
 
