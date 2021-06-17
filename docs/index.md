@@ -46,6 +46,7 @@ These endpoints provide datasets that were used for publications. Note that this
 
 ### [Revealing enigmatic mucus structures in the deep sea using DeepPIV](https://www.nature.com/articles/s41586-020-2345-2)
 
-<http://m3.shore.mbari.org/references/n0>
+Internal: <http://m3.shore.mbari.org/references/n0>
+External: <http://dsg.mbari.org/references/n0>
 
 The static data set can be found at <https://data.mbari.org/products/vars/references/Kakani_Nature20190609559.json>
