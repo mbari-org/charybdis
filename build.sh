@@ -7,12 +7,17 @@ cd "$MY_DIR"
 BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
 VCS_REF=`git tag | sort -V | tail -1`
 
+# Github packages needs an access token. So move one into the docker context
+cp "$HOME/.m2/settings.xml" "$MY_DIR/settings.xml"
+
 docker build --build-arg BUILD_DATE=$BUILD_DATE \
              --build-arg VCS_REF=$VCS_REF \
              -t mbari/charybdis:${VCS_REF} \
              -t mbari/charybdis:latest \
              -f Dockerfile . && \
   docker push mbari/charybdis
+
+rm "$MY_DIR/settings.xml"
 
 ssh "$USER@ione.mbari.org" << 'ENDSSH'
   docker pull mbari/charybdis
