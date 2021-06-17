@@ -22,12 +22,12 @@
     <parent>
         <groupId>io.helidon.applications</groupId>
         <artifactId>helidon-se</artifactId>
-        <version>2.2.0</version>
+        <version>2.3.0</version>
         <relativePath />
     </parent>
     <groupId>org.mbari</groupId>
     <artifactId>charybdis</artifactId>
-    <version>0.0.3</version>
+    <version>0.1.0</version>
     <name>${project.artifactId}</name>
 
     <properties>
@@ -35,6 +35,9 @@
         <mainClass>org.mbari.charybdis.Main</mainClass>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
+        <gson.version>2.8.7</gson.version>
+        <vars.version>1.0.1</vars.version>
+        <vcr4j.version>4.4.1.jre11</vcr4j.version>
     </properties>
 
     <dependencies>
@@ -68,19 +71,19 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mbari.m3</groupId>
+            <groupId>org.mbari.vars</groupId>
             <artifactId>org.mbari.vars.services</artifactId>
-            <version>0.5.9</version>
+            <version>${vars.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.mbari.m3</groupId>
+            <groupId>org.mbari.vars</groupId>
             <artifactId>org.mbari.vars.core</artifactId>
-            <version>0.5.9</version>
+            <version>${vars.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.6</version>
+            <version>${gson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fatboyindustrial.gson-javatime-serialisers</groupId>
@@ -90,7 +93,7 @@
         <dependency>
             <groupId>org.mbari.vcr4j</groupId>
             <artifactId>vcr4j-core</artifactId>
-            <version>4.3.2.jre11</version>
+            <version>${vcr4j.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -104,17 +107,9 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-            <id>bintray-hohonuuli-maven</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/hohonuuli/maven</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>bintray-mbari-maven</id>
-            <name>bintray</name>
-            <url>https://dl.bintray.com/org-mbari/maven</url>
+            <id>github</id>
+            <name>github</name>
+            <url>https://maven.pkg.github.com/mbari-org/maven</url>
         </repository>
     </repositories>
 
