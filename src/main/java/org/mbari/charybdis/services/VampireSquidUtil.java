@@ -64,4 +64,13 @@ public class VampireSquidUtil {
                 .thenApply(ArrayList::new);
     }
 
+    public CompletableFuture<List<Media>> findMediaByVideoFileName(String videoFileName) {
+        return service.findByFilename(videoFileName)
+            .exceptionally(e -> {
+                log.log(Level.WARNING, e, () -> "Failed to fetch media with filename of " + videoFileName);
+                return Collections.emptyList();
+            })
+            .thenApply(ArrayList::new);
+    }
+
 }
