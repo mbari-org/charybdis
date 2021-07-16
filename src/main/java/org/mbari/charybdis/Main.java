@@ -29,6 +29,8 @@ import io.helidon.metrics.MetricsSupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerConfiguration;
 import io.helidon.webserver.WebServer;
+import io.helidon.webserver.cors.CorsSupport;
+import io.helidon.webserver.cors.CrossOriginConfig;
 import org.mbari.charybdis.services.AnnosaurusUtil;
 import org.mbari.charybdis.services.SimpleQueryService;
 import org.mbari.charybdis.services.Kakani2019Nature;
@@ -64,7 +66,7 @@ public final class Main {
         setupLogging();
 
         // By default this will pick up application.yaml from the classpath
-        Config config = Config.create();
+        var config = Config.create();
 
         WebServer server = WebServer.builder(createRouting(config))
                 .config(config.get("server"))
@@ -100,9 +102,15 @@ public final class Main {
      */
     private static Routing createRouting(Config config) {
 
-        MetricsSupport metrics = MetricsSupport.create();
-        HealthSupport health = HealthSupport.builder()
+        var metrics = MetricsSupport.create();
+        var health = HealthSupport.builder()
                 .addLiveness(HealthChecks.healthChecks())   // Adds a convenient set of checks
+                .build();
+        var corsSupport = CorsSupport.builder()
+                .addCrossOrigin(CrossOriginConfig.builder()
+                        .allowOrigins("*")
+                        .build())
+                .addCrossOrigin(CrossOriginConfig.create())
                 .build();
 
         // VARS Stuff
@@ -115,8 +123,8 @@ public final class Main {
         return Routing.builder()
                 .register(health)                   // Health at "/health"
                 .register(metrics)                  // Metrics at "/metrics"
-                .register("/n0", n0)
-                .register("/query", diveService)
+                .register("/n0", corsSupport, n0)
+                .register("/query", corsSupport, diveService)
                 .build();
     }
 
