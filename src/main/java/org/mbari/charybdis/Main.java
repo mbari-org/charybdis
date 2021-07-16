@@ -109,6 +109,7 @@ public final class Main {
         var corsSupport = CorsSupport.builder()
                 .addCrossOrigin(CrossOriginConfig.builder()
                         .allowOrigins("*")
+                        .allowMethods("*")
                         .build())
                 .addCrossOrigin(CrossOriginConfig.create())
                 .build();

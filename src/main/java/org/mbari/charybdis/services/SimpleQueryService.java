@@ -37,6 +37,7 @@ public class SimpleQueryService implements Service {
 
     @Override
     public void update(Routing.Rules rules) {
+        rules.options((req, res) -> {}); // Needed for CORS
         rules.get("/concept/{concept}", this::byConceptHandler);
         rules.get("/dive/{videoSequenceName}", this::byDiveHandler);
         rules.get("/file/{videoFileName}", this::byVideoFileNameHandler);
