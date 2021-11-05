@@ -154,6 +154,7 @@ public class SimpleQueryService implements Service {
     private CompletableFuture<DataGroup> limitedRequest(List<Media> media, LimitOffset limitOffset) {
         if (limitOffset == null || !limitOffset.isOk()) {
             var uuids = media.stream()
+                    .sorted(Comparator.comparing(Media::getStartTimestamp))
                     .map(Media::getVideoReferenceUuid)
                     .collect(Collectors.toList());
             return AsyncUtils.collectAll(uuids, annosaurus::findByVideoReferenceUuid)
@@ -170,7 +171,11 @@ public class SimpleQueryService implements Service {
         var returned = new AtomicLong(0);
         var annotations = new CopyOnWriteArrayList<Annotation>();
 
-        var queryFuture = AsyncUtils.collectAll(media, m -> annosaurus.countByVideoReferenceUuid(m.getVideoReferenceUuid()))
+        var sortedMedia = media.stream()
+                .sorted(Comparator.comparing(Media::getStartTimestamp))
+                .collect(Collectors.toList());
+
+        var queryFuture = AsyncUtils.collectAll(sortedMedia, m -> annosaurus.countByVideoReferenceUuid(m.getVideoReferenceUuid()))
                 .thenCompose(annotationCounts -> {
                     var stream = annotationCounts.stream()
                             .map(ac -> {
