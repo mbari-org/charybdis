@@ -40,7 +40,7 @@ public class SimpleQueryService implements Service {
         }
 
         boolean isOk() {
-            return offset >= 0 && limit > 0;
+            return offset >= 0 || limit > 0;
         }
     }
 
