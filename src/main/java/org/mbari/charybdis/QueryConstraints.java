@@ -10,4 +10,5 @@ public class QueryConstraints {
     private List<String> observers;
     private List<String> groups;
     private List<String> activities;
+
 }

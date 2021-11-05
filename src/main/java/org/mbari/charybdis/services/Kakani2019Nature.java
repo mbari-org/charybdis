@@ -14,13 +14,13 @@ import java.util.logging.Logger;
  */
 public class Kakani2019Nature implements Service {
 
-  private final AnnosaurusUtil annosaurusUtil;
-  private final VampireSquidUtil vampireSquidUtil;
+  private final Annosaurus annosaurus;
+  private final VampireSquid vampireSquid;
   private final Logger log = Logger.getLogger(getClass().getName());
 
-  public Kakani2019Nature(AnnosaurusUtil annosaurusUtil, VampireSquidUtil vampireSquidUtil) {
-    this.annosaurusUtil = annosaurusUtil;
-    this.vampireSquidUtil = vampireSquidUtil;
+  public Kakani2019Nature(Annosaurus annosaurus, VampireSquid vampireSquid) {
+    this.annosaurus = annosaurus;
+    this.vampireSquid = vampireSquid;
   }
 
   @Override
@@ -31,10 +31,10 @@ public class Kakani2019Nature implements Service {
   private void defaultHandler(ServerRequest request, ServerResponse response) {
     // Get annotations, then get media, then package them together
     response.headers().contentType(MediaType.APPLICATION_JSON);
-    annosaurusUtil.findByLinkNameAndLinkValue("comment", "Nature20190609559")
-        .thenApply(as -> vampireSquidUtil.findMediaForAnnotations(as)
+    annosaurus.findByLinkNameAndLinkValue("comment", "Nature20190609559")
+        .thenApply(as -> vampireSquid.findMediaForAnnotations(as)
                 .thenApply(ms -> new DataGroup(as, ms))
-                .thenApply(obj -> annosaurusUtil.getGson().toJson(obj))
+                .thenApply(obj -> annosaurus.getGson().toJson(obj))
                 .thenAccept(response::send));
 
   }

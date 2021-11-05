@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
  * @author Brian Schlining
  * @since 2019-10-04T10:51:00
  */
-public class VampireSquidUtil {
+public class VampireSquid {
 
     private final VamService service;
     private final Logger log = Logger.getLogger(getClass().getName());
 
-    public VampireSquidUtil(Config config) {
+    public VampireSquid(Config config) {
         var endpoint = config.get("media.service.url")
                 .asString()
                 .orElse("http://localhost:8082");
@@ -37,7 +37,6 @@ public class VampireSquidUtil {
         var serviceFactory = new VamWebServiceFactory(endpoint, timeout);
         service = new VamService(serviceFactory, authService);
     }
-
 
     public CompletableFuture<List<Media>> findMediaForAnnotations(List<Annotation> annotations) {
         var mediaUuids = annotations.stream()

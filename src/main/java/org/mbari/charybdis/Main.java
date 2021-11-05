@@ -27,14 +27,13 @@ import io.helidon.media.jsonb.JsonbSupport;
 import io.helidon.media.jsonp.JsonpSupport;
 import io.helidon.metrics.MetricsSupport;
 import io.helidon.webserver.Routing;
-import io.helidon.webserver.ServerConfiguration;
 import io.helidon.webserver.WebServer;
 import io.helidon.webserver.cors.CorsSupport;
 import io.helidon.webserver.cors.CrossOriginConfig;
-import org.mbari.charybdis.services.AnnosaurusUtil;
+import org.mbari.charybdis.services.Annosaurus;
 import org.mbari.charybdis.services.SimpleQueryService;
 import org.mbari.charybdis.services.Kakani2019Nature;
-import org.mbari.charybdis.services.VampireSquidUtil;
+import org.mbari.charybdis.services.VampireSquid;
 
 /**
  * The application main class.
@@ -115,8 +114,8 @@ public final class Main {
                 .build();
 
         // VARS Stuff
-        var annosaurus = new AnnosaurusUtil(config);
-        var vampireSquid = new VampireSquidUtil(config);
+        var annosaurus = new Annosaurus(config);
+        var vampireSquid = new VampireSquid(config);
         var n0 = new Kakani2019Nature(annosaurus, vampireSquid);
         var diveService = new SimpleQueryService(annosaurus, vampireSquid);
 
