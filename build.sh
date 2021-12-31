@@ -10,12 +10,20 @@ VCS_REF=`git tag | sort -V | tail -1`
 # Github packages needs an access token. So move one into the docker context
 cp "$HOME/.m2/settings.xml" "$MY_DIR/settings.xml"
 
-docker build --build-arg BUILD_DATE=$BUILD_DATE \
-             --build-arg VCS_REF=$VCS_REF \
-             -t mbari/charybdis:${VCS_REF} \
-             -t mbari/charybdis:latest \
-             -f Dockerfile . && \
-  docker push mbari/charybdis
+# docker build --build-arg BUILD_DATE=$BUILD_DATE \
+#              --build-arg VCS_REF=$VCS_REF \
+#              -t mbari/charybdis:${VCS_REF} \
+#              -t mbari/charybdis:latest \
+#              -f Dockerfile . && \
+#   docker push mbari/charybdis
+
+
+docker buildx build \
+    --platform linux/amd64,linux/arm64 \
+    -t mbari/charybdis:${VCS_REF} \
+    -t mbari/charybdis:latest \
+    -f Dockerfile \
+    --push . 
 
 rm "$MY_DIR/settings.xml"
 
@@ -46,3 +54,4 @@ ssh "$USER@quasar.shore.mbari.org" << 'ENDSSH'
     --restart unless-stopped \
     mbari/charybdis
 ENDSSH
+
