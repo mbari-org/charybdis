@@ -6,6 +6,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.helidon.config.Config;
+import org.mbari.charybdis.domain.ExtendedAnnotation;
 import org.mbari.vars.services.NoopAuthService;
 import org.mbari.vars.services.Pager;
 import org.mbari.vars.services.gson.AnnotationCreator;
@@ -161,10 +162,50 @@ public class Annosaurus {
         return future;
     }
 
-    private <T> CompletableFuture<T> call(String url, Function<String, T> bodyConverter) {
+    public CompletableFuture<ConceptCount> countByQueryConstraint(String queryConstraintJson) {
+        var url = "/fast/count";
+        callWithJsonBody(url, queryConstraintJson)
+    }
+
+    public CompletableFuture<List<ExtendedAnnotation>> findByQueryConstraints(String queryConstraintJson) {
+        var annotations = new CopyOnWriteArrayList<Annotation>();
+        var future = new CompletableFuture<List<Annotation>>();
+        try {
+
+        }
+        catch (Exception e) {
+            future.completeExceptionally(e);
+        }
+    }
+
+    private <T> CompletableFuture<T> call(String url,
+                                          Function<String, T> bodyConverter) {
         try {
             var request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
+                    .build();
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            var json = response.body();
+            var annotations = bodyConverter.apply(json);
+            return CompletableFuture.completedFuture(annotations);
+        }
+        catch (IOException e) {
+            log.log(Level.WARNING, e, () -> "Failed to communicate with annosaurus");
+            return CompletableFuture.failedFuture(e);
+        }
+        catch (Exception e) {
+            log.log(Level.WARNING, e, () -> "Failed to convert json to annotations");
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    private <T> CompletableFuture<T> callWithJsonBody(String url,
+                                                  String jsonBody,
+                                                  Function<String, T> bodyConverter) {
+        try {
+            var request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                     .build();
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             var json = response.body();

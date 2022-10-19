@@ -11,8 +11,7 @@ import org.mbari.vars.services.model.Annotation;
 import org.mbari.vars.services.model.Media;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -60,6 +59,17 @@ public class SimpleQueryService implements Service {
         rules.get("/file/{videoFileName}", this::byVideoFileNameHandler);
     }
 
+    private void byQueryConstraintsHandler(ServerRequest request, ServerResponse response) {
+        try {
+            var body = request.content()
+                    .as(String.class)
+                    .get(5000, TimeUnit.MILLISECONDS);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void byDiveHandler(ServerRequest request, ServerResponse response) {
         var limitOffset = LimitOffset
                 .from(request)
@@ -75,17 +85,6 @@ public class SimpleQueryService implements Service {
                 .thenApply(obj -> annosaurus.getGson().toJson(obj))
                 .thenAccept(response::send);
 
-//        vampireSquid.findMediaByVideoSequenceName(videoSequenceName)
-//                .thenAccept(ms -> {
-//                    var uuids = ms.stream()
-//                            .map(Media::getVideoReferenceUuid)
-//                            .collect(Collectors.toList());
-//                    AsyncUtils.collectAll(uuids, annosaurus::findByVideoReferenceUuid)
-//                            .thenApply(annos -> annos.stream().flatMap(Collection::stream).collect(Collectors.toList()))
-//                            .thenApply(annos -> new DataGroup(annos, ms))
-//                            .thenApply(obj -> annosaurus.getGson().toJson(obj))
-//                            .thenAccept(response::send);
-//                });
     }
 
     private void byConceptHandler(ServerRequest request, ServerResponse response) {
@@ -123,17 +122,6 @@ public class SimpleQueryService implements Service {
                 .thenApply(obj -> annosaurus.getGson().toJson(obj))
                 .thenAccept(response::send);
 
-//        vampireSquid.findMediaByVideoFileName(videoFileName)
-//                .thenAccept(ms -> {
-//                    var uuids = ms.stream()
-//                            .map(Media::getVideoReferenceUuid)
-//                            .collect(Collectors.toList());
-//
-//                    AsyncUtils.collectAll(uuids, annosaurus::findByVideoReferenceUuid)
-//                            .thenApply(annos -> asDataGroups(ms, annos))
-//                            .thenApply(obj -> annosaurus.getGson().toJson(obj))
-//                            .thenAccept(response::send);
-//                });
     }
 
     private static List<DataGroup> asDataGroups(Collection<Media> media, Collection<List<Annotation>> annotations) {
@@ -192,7 +180,7 @@ public class SimpleQueryService implements Service {
                             .map(mediaPage -> annosaurus.findByVideoReferenceUuid(mediaPage.videoReferenceUuid(),
                                     mediaPage.limitOffset.limit(),
                                     mediaPage.limitOffset.offset()).thenAccept(annotations::addAll))
-                            .collect(Collectors.toList());
+                            .toList();
                     var array = stream.toArray(CompletableFuture[]::new);
                     return CompletableFuture.allOf(array);
                 });
@@ -219,11 +207,6 @@ public class SimpleQueryService implements Service {
     private long calcLimit(long returnedCounts, long thisCount, long limit, long thisOffset) {
         var a = thisCount - thisOffset;
         var r = limit - returnedCounts;
-        if (a > r) {
-            return r;
-        }
-        else {
-            return a;
-        }
+        return Math.min(a, r);
     }
 }
