@@ -5,7 +5,7 @@ Provides fixed endpoints of M3 annotation data used in publication. This allows 
 
 ## Build and run
 
-With JDK11+
+With JDK17+
 ```bash
 mvn package
 java -jar target/charybdis.jar
@@ -39,7 +39,9 @@ curl -H 'Accept: application/json' -X GET http://localhost:8080/metrics
 ## Build the Docker Image
 
 ```
-docker build -t charybdis .
+# We need our github access key to get VARS dependencies
+cp ~/.m2/settings.xml . 
+docker build -t mbari/charybdis .
 ```
 
 ## Start the application with Docker

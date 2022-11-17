@@ -18,12 +18,12 @@ cp "$HOME/.m2/settings.xml" "$MY_DIR/settings.xml"
 #   docker push mbari/charybdis
 
 
-docker buildx build \
+`docker buildx build \
     --platform linux/amd64,linux/arm64 \
     -t mbari/charybdis:${VCS_REF} \
     -t mbari/charybdis:latest \
     -f Dockerfile \
-    --push . 
+    --push . `
 
 rm "$MY_DIR/settings.xml"
 

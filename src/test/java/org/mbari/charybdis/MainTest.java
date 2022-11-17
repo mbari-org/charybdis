@@ -22,10 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.net.URL;
 import java.net.HttpURLConnection;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonReaderFactory;
+
 
 import io.helidon.webserver.WebServer;
 
@@ -37,7 +34,6 @@ import org.junit.jupiter.api.Test;
 public class MainTest {
 
     private static WebServer webServer;
-    private static final JsonReaderFactory JSON = Json.createReaderFactory(Collections.emptyMap());
 
     @BeforeAll
     public static void startTheServer() throws Exception {
@@ -63,46 +59,11 @@ public class MainTest {
         }
     }
 
-
-//    @Test
-    public void testHelloWorld() throws Exception {
-        HttpURLConnection conn;
-
-        conn = getURLConnection("GET","/greet");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response1");
-        JsonReader jsonReader = JSON.createReader(conn.getInputStream());
-        JsonObject jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Hello World!", jsonObject.getString("message"),
-                "default message");
-
-        conn = getURLConnection("GET", "/greet/Joe");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response2");
-        jsonReader = JSON.createReader(conn.getInputStream());
-        jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Hello Joe!", jsonObject.getString("message"),
-                "hello Joe message");
-
-        conn = getURLConnection("PUT", "/greet/greeting");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-        OutputStream os = conn.getOutputStream();
-        os.write("{\"greeting\" : \"Hola\"}".getBytes());
-        os.close();
-        Assertions.assertEquals(204, conn.getResponseCode(), "HTTP response3");
-
-        conn = getURLConnection("GET", "/greet/Jose");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response4");
-        jsonReader = JSON.createReader(conn.getInputStream());
-        jsonObject = jsonReader.readObject();
-        Assertions.assertEquals("Hola Jose!", jsonObject.getString("message"),
-                "hola Jose message");
-
-        conn = getURLConnection("GET", "/health");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response2");
-
-        conn = getURLConnection("GET", "/metrics");
-        Assertions.assertEquals(200, conn.getResponseCode(), "HTTP response2");
+    @Test
+    public void testStartUp() {
+        Assertions.assertNotNull(webServer);
     }
+
 
     private HttpURLConnection getURLConnection(String method, String path) throws Exception {
         URL url = new URL("http://localhost:" + webServer.port() + path);

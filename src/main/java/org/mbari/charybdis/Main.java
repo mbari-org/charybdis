@@ -31,6 +31,7 @@ import io.helidon.webserver.WebServer;
 import io.helidon.webserver.cors.CorsSupport;
 import io.helidon.webserver.cors.CrossOriginConfig;
 import org.mbari.charybdis.services.Annosaurus;
+import org.mbari.charybdis.services.SimpleCountService;
 import org.mbari.charybdis.services.SimpleQueryService;
 import org.mbari.charybdis.services.Kakani2019Nature;
 import org.mbari.charybdis.services.VampireSquid;
@@ -118,6 +119,7 @@ public final class Main {
         var vampireSquid = new VampireSquid(config);
         var n0 = new Kakani2019Nature(annosaurus, vampireSquid);
         var diveService = new SimpleQueryService(annosaurus, vampireSquid);
+        var countService = new SimpleCountService(annosaurus, vampireSquid);
 
 
         return Routing.builder()
@@ -125,6 +127,7 @@ public final class Main {
                 .register(metrics)                  // Metrics at "/metrics"
                 .register("/n0", corsSupport, n0)
                 .register("/query", corsSupport, diveService)
+                .register("/count", corsSupport, countService)
                 .build();
     }
 

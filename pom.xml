@@ -35,7 +35,7 @@
         <mainClass>org.mbari.charybdis.Main</mainClass>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <gson.version>2.9.1</gson.version>
+        <gson.version>2.10</gson.version>
         <gson.javatime.version>1.1.2</gson.javatime.version>
         <methanol.version>1.7.0</methanol.version>
         <vars.version>1.2.3</vars.version>

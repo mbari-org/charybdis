@@ -162,21 +162,21 @@ public class Annosaurus {
         return future;
     }
 
-    public CompletableFuture<ConceptCount> countByQueryConstraint(String queryConstraintJson) {
-        var url = "/fast/count";
-        callWithJsonBody(url, queryConstraintJson)
-    }
+//    public CompletableFuture<ConceptCount> countByQueryConstraint(String queryConstraintJson) {
+//        var url = "/fast/count";
+//        callWithJsonBody(url, queryConstraintJson)
+//    }
 
-    public CompletableFuture<List<ExtendedAnnotation>> findByQueryConstraints(String queryConstraintJson) {
-        var annotations = new CopyOnWriteArrayList<Annotation>();
-        var future = new CompletableFuture<List<Annotation>>();
-        try {
-
-        }
-        catch (Exception e) {
-            future.completeExceptionally(e);
-        }
-    }
+//    public CompletableFuture<List<ExtendedAnnotation>> findByQueryConstraints(String queryConstraintJson) {
+//        var annotations = new CopyOnWriteArrayList<Annotation>();
+//        var future = new CompletableFuture<List<Annotation>>();
+//        try {
+//
+//        }
+//        catch (Exception e) {
+//            future.completeExceptionally(e);
+//        }
+//    }
 
     private <T> CompletableFuture<T> call(String url,
                                           Function<String, T> bodyConverter) {
