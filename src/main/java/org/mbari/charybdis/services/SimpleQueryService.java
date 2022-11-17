@@ -70,6 +70,10 @@ public class SimpleQueryService implements Service {
         }
     }
 
+    private void countByDiveHandler(ServerRequest request, ServerResponse response) {
+        
+    }
+
     private void byDiveHandler(ServerRequest request, ServerResponse response) {
         var limitOffset = LimitOffset
                 .from(request)
