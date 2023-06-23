@@ -6,7 +6,8 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.helidon.config.Config;
-import org.mbari.charybdis.domain.ExtendedAnnotation;
+// import org.mbari.charybdis.domain.ExtendedAnnotation;
+import org.mbari.jcommons.util.Logging;
 import org.mbari.vars.services.NoopAuthService;
 import org.mbari.vars.services.Pager;
 import org.mbari.vars.services.gson.AnnotationCreator;
@@ -22,6 +23,7 @@ import org.mbari.vars.services.model.ImagedMoment;
 import org.mbari.vcr4j.time.Timecode;
 
 import java.io.IOException;
+// import java.lang.System.Logger;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -34,8 +36,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  * @author Brian Schlining
@@ -46,7 +47,7 @@ public class Annosaurus {
     private Gson gson;
     private final String endpoint;
     private final AnnoService service;
-    private final Logger log = Logger.getLogger(getClass().getName());
+    private final Logging log = new Logging(getClass());
     private final Methanol httpClient;
     private final Duration timeout;
     private final Integer pageSize;
@@ -137,11 +138,10 @@ public class Annosaurus {
                         // TODO sort annotations by time?
                         var annos =  service.findByConcept(concept, limit, offset, true)
                                 .get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-                        log.info("Found " + annos.size() + " annotations");
+                        log.atInfo().log("Found " + annos.size() + " annotations");
                         return annos;
                     } catch (Exception e) {
-                        log.log(Level.WARNING, e,
-                                () -> "Failed to fetch annotation for " +
+                        log.atWarn().withCause(e).log(() -> "Failed to fetch annotation for " +
                                         concept + " (" + offset + "-" + (offset + limit) + ")");
                         return Collections.emptyList();
                     }
@@ -190,11 +190,11 @@ public class Annosaurus {
             return CompletableFuture.completedFuture(annotations);
         }
         catch (IOException e) {
-            log.log(Level.WARNING, e, () -> "Failed to communicate with annosaurus");
+            log.atWarn().withCause(e).log(() -> "Failed to communicate with annosaurus");
             return CompletableFuture.failedFuture(e);
         }
         catch (Exception e) {
-            log.log(Level.WARNING, e, () -> "Failed to convert json to annotations");
+            log.atWarn().withCause(e).log(() -> "Failed to convert json to annotations");
             return CompletableFuture.failedFuture(e);
         }
     }
@@ -213,11 +213,11 @@ public class Annosaurus {
             return CompletableFuture.completedFuture(annotations);
         }
         catch (IOException e) {
-            log.log(Level.WARNING, e, () -> "Failed to communicate with annosaurus");
+            log.atWarn().withCause(e).log(() -> "Failed to communicate with annosaurus");
             return CompletableFuture.failedFuture(e);
         }
         catch (Exception e) {
-            log.log(Level.WARNING, e, () -> "Failed to convert json to annotations");
+            log.atWarn().withCause(e).log(() -> "Failed to convert json to annotations");
             return CompletableFuture.failedFuture(e);
         }
     }

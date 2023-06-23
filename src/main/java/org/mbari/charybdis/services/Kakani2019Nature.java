@@ -6,8 +6,9 @@ import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;
 import io.helidon.webserver.Service;
 import org.mbari.charybdis.DataGroup;
+// import org.mbari.jcommons.util.Logging;
 
-import java.util.logging.Logger;
+// import java.util.logging.Logger;
 
 /**
  * Kakani2019Nature
@@ -16,7 +17,7 @@ public class Kakani2019Nature implements Service {
 
   private final Annosaurus annosaurus;
   private final VampireSquid vampireSquid;
-  private final Logger log = Logger.getLogger(getClass().getName());
+  // private final Logging log = new Logging(getClass());
 
   public Kakani2019Nature(Annosaurus annosaurus, VampireSquid vampireSquid) {
     this.annosaurus = annosaurus;

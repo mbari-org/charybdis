@@ -13,7 +13,7 @@ import org.mbari.vars.services.model.Media;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
+// import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +24,7 @@ public class SimpleQueryService implements Service {
 
     private final Annosaurus annosaurus;
     private final VampireSquid vampireSquid;
-    private final Logger log = Logger.getLogger(getClass().getName());
+    // private final Logger log = Logger.getLogger(getClass().getName());
 
     private record LimitOffset(Long limit, Long offset) {
         static Optional<LimitOffset> from(ServerRequest request) {

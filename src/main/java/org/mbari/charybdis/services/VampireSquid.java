@@ -1,6 +1,8 @@
 package org.mbari.charybdis.services;
 
 import io.helidon.config.Config;
+
+import org.mbari.jcommons.util.Logging;
 import org.mbari.vars.core.util.AsyncUtils;
 import org.mbari.vars.services.NoopAuthService;
 import org.mbari.vars.services.impl.vampiresquid.v1.VamService;
@@ -13,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class VampireSquid {
 
     private final VamService service;
-    private final Logger log = Logger.getLogger(getClass().getName());
+    private final Logging log = new Logging(getClass());
 
     public VampireSquid(Config config) {
         var endpoint = config.get("media.service.url")
@@ -44,11 +44,11 @@ public class VampireSquid {
                 .distinct()
                 .collect(Collectors.toList());
 
-        log.info("Starting lookup of " + mediaUuids.size() + " media");
+        log.atInfo().log("Starting lookup of " + mediaUuids.size() + " media");
 
         return AsyncUtils.collectAll(mediaUuids, service::findByUuid)
                 .exceptionally( e -> {
-                    log.log(Level.WARNING, e, () -> "Failed to fetch media");
+                    log.atWarn().withCause(e).log(() -> "Failed to fetch media");
                     return Collections.emptyList();
                 })
                 .thenApply(ArrayList::new);
@@ -57,7 +57,7 @@ public class VampireSquid {
     public CompletableFuture<List<Media>> findMediaByVideoSequenceName(String videoSequencename) {
         return service.findByVideoSequenceName(videoSequencename)
                 .exceptionally(e -> {
-                    log.log(Level.WARNING, e, () -> "Failed to fetch media for " + videoSequencename);
+                    log.atWarn().withCause(e).log(() -> "Failed to fetch media for " + videoSequencename);
                     return Collections.emptyList();
                 })
                 .thenApply(ArrayList::new);
@@ -66,7 +66,7 @@ public class VampireSquid {
     public CompletableFuture<List<Media>> findMediaByVideoFileName(String videoFileName) {
         return service.findByFilename(videoFileName)
             .exceptionally(e -> {
-                log.log(Level.WARNING, e, () -> "Failed to fetch media with filename of " + videoFileName);
+                log.atWarn().withCause(e).log(() -> "Failed to fetch media with filename of " + videoFileName);
                 return Collections.emptyList();
             })
             .thenApply(ArrayList::new);

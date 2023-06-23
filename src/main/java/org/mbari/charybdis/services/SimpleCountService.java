@@ -3,7 +3,7 @@ package org.mbari.charybdis.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
+// import java.util.logging.Logger;
 
 import org.mbari.charybdis.CountByMedia;
 import org.mbari.charybdis.CountByDive;
@@ -19,7 +19,7 @@ public class SimpleCountService implements Service {
 
     private final Annosaurus annosaurus;
     private final VampireSquid vampireSquid;
-    private final Logger log = Logger.getLogger(getClass().getName());
+    // private final Logger log = Logger.getLogger(getClass().getName());
 
 
     public SimpleCountService(Annosaurus annosaurus, VampireSquid vampireSquid) {
