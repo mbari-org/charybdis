@@ -15,7 +15,7 @@
 #
 
 # 1st stage, build the app
-FROM maven:3.9-temurin-21-alpine as build
+FROM maven:3.9-eclipse-temurin-21-alpine as build
 
 WORKDIR /helidon
 
