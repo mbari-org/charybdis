@@ -108,7 +108,7 @@ public class SimpleQueryService implements HttpService {
                 .map(lo -> annosaurus.findByConcept(concept, lo.limit(), lo.offset()))
                 .orElseGet(() -> annosaurus.findByConcept(concept));
 
-        var result = future.thenAccept(annos ->
+        var result = future.thenCompose(annos ->
             vampireSquid.findMediaForAnnotations(annos)
                     .thenApply(ms -> new DataGroup(annos, ms))
                     .thenApply(obj -> annosaurus.getGson().toJson(obj))

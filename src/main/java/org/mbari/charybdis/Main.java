@@ -30,6 +30,7 @@ import org.mbari.charybdis.services.VampireSquid;
 import io.helidon.config.Config;
 import io.helidon.cors.CrossOriginConfig;
 import io.helidon.health.checks.HealthChecks;
+import io.helidon.logging.common.LogConfig;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.WebServer;
 import io.helidon.webserver.cors.CorsSupport;
@@ -66,8 +67,7 @@ public final class Main {
      */
     static WebServer startServer() throws IOException {
 
-        // load logging configuration
-        setupLogging();
+        LogConfig.configureRuntime();   
 
         // By default this will pick up application.yaml from the classpath
         var config = Config.create();
@@ -124,13 +124,5 @@ public final class Main {
                 .register("/count", corsSupport, countService);
     }
 
-    /**
-     * Configure logging from logging.properties file.
-     */
-    private static void setupLogging() throws IOException {
-        try (InputStream is = Main.class.getResourceAsStream("/logging.properties")) {
-            LogManager.getLogManager().readConfiguration(is);
-        }
-    }
 
 }
