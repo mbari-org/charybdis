@@ -3,23 +3,23 @@ package org.mbari.charybdis.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-// import java.util.logging.Logger;
 
-import org.mbari.charybdis.CountByMedia;
 import org.mbari.charybdis.CountByDive;
+import org.mbari.charybdis.CountByMedia;
 import org.mbari.vars.core.util.AsyncUtils;
 import org.mbari.vars.services.model.Media;
-import io.helidon.common.http.MediaType;
-import io.helidon.webserver.Routing;
-import io.helidon.webserver.ServerRequest;
-import io.helidon.webserver.ServerResponse;
-import io.helidon.webserver.Service;
 
-public class SimpleCountService implements Service {
+import io.helidon.common.media.type.MediaTypes;
+import io.helidon.webserver.http.HttpRules;
+import io.helidon.webserver.http.HttpService;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
+
+
+public class SimpleCountService implements HttpService {
 
     private final Annosaurus annosaurus;
     private final VampireSquid vampireSquid;
-    // private final Logger log = Logger.getLogger(getClass().getName());
 
 
     public SimpleCountService(Annosaurus annosaurus, VampireSquid vampireSquid) {
@@ -28,23 +28,27 @@ public class SimpleCountService implements Service {
     }
 
     @Override
-    public void update(Routing.Rules rules) {
+    public void routing(HttpRules rules) {
         rules.options((req, res) -> {
         }); // Needed for CORS
         rules.get("/dive/{videoSequenceName}", this::byDiveHandler);
     }
 
     private void byDiveHandler(ServerRequest request, ServerResponse response) {
-        response.headers().contentType(MediaType.APPLICATION_JSON);
+        response.headers().contentType(MediaTypes.APPLICATION_JSON);
         String videoSequenceName = request.path()
                 .absolute()
-                .param("videoSequenceName");
+                .pathParameters()
+                .get("videoSequenceName");
 
-        vampireSquid.findMediaByVideoSequenceName(videoSequenceName)
+        var result = vampireSquid.findMediaByVideoSequenceName(videoSequenceName)
                 .thenCompose(this::countByMedia)
                 .thenApply(c -> new CountByDive(c.count(), videoSequenceName, c.annotationCounts()))
                 .thenApply(obj -> annosaurus.getGson().toJson(obj))
-                .thenAccept(response::send);
+                .join();
+
+        response.send(result);
+
 
     }
 

@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.mbari.charybdis;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.LogManager;
 
+import javax.net.ssl.TrustManager;
+
+import org.mbari.charybdis.services.Annosaurus;
+import org.mbari.charybdis.services.Kakani2019Nature;
+import org.mbari.charybdis.services.SimpleCountService;
+import org.mbari.charybdis.services.SimpleQueryService;
+import org.mbari.charybdis.services.VampireSquid;
+
 import io.helidon.config.Config;
-import io.helidon.health.HealthSupport;
+import io.helidon.cors.CrossOriginConfig;
 import io.helidon.health.checks.HealthChecks;
-import io.helidon.media.jsonb.JsonbSupport;
-import io.helidon.media.jsonp.JsonpSupport;
-import io.helidon.metrics.MetricsSupport;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.WebServer;
 import io.helidon.webserver.cors.CorsSupport;
-import io.helidon.webserver.cors.CrossOriginConfig;
-import org.mbari.charybdis.services.Annosaurus;
-import org.mbari.charybdis.services.SimpleCountService;
-import org.mbari.charybdis.services.SimpleQueryService;
-import org.mbari.charybdis.services.Kakani2019Nature;
-import org.mbari.charybdis.services.VampireSquid;
+import io.helidon.webserver.http.HttpRouting;
+import io.helidon.webserver.observe.ObserveFeature;
+import io.helidon.webserver.observe.health.HealthObserver;
 
 /**
  * The application main class.
@@ -44,10 +45,12 @@ public final class Main {
     /**
      * Cannot be instantiated.
      */
-    private Main() { }
+    private Main() {
+    }
 
     /**
      * Application main entry point.
+     *
      * @param args command line arguments.
      * @throws IOException if there are problems reading logging properties
      */
@@ -57,6 +60,7 @@ public final class Main {
 
     /**
      * Start the server.
+     *
      * @return the created {@link WebServer} instance
      * @throws IOException if there are problems reading logging properties
      */
@@ -67,45 +71,39 @@ public final class Main {
 
         // By default this will pick up application.yaml from the classpath
         var config = Config.create();
+        Config.global(config);
 
-        WebServer server = WebServer.builder(createRouting(config))
+        WebServer server = WebServer.builder()
                 .config(config.get("server"))
-                .addMediaSupport(JsonpSupport.create())
-                .addMediaSupport(JsonbSupport.create())
-                .build();
+                .addFeature(ObserveFeature.create(HealthObserver.builder()
+                                                  .useSystemServices(false) 
+                                                  .addCheck(HealthChecks.deadlockCheck()) 
+                                                  .addCheck(HealthChecks.diskSpaceCheck())
+                                                  .addCheck(HealthChecks.heapMemoryCheck()) 
+                                                  .details(true)
+                                                  .build()))
+                .routing(Main::routing)
+                .build()
+                .start();
 
-        // Try to start the server. If successful, print some info and arrange to
-        // print a message at shutdown. If unsuccessful, print the exception.
-        server.start()
-            .thenAccept(ws -> {
-                System.out.println(
-                        "WEB server is up! http://localhost:" + ws.port() + "/n0");
-                ws.whenShutdown().thenRun(()
-                    -> System.out.println("WEB server is DOWN. Good bye!"));
-                })
-            .exceptionally(t -> {
-                System.err.println("Startup failed: " + t.getMessage());
-                t.printStackTrace(System.err);
-                return null;
-            });
 
-        // Server threads are not daemon. No need to block. Just react.
-
+        System.out.println( "WEB server is up! http://localhost:" + server.port() + "/n0");
         return server;
+
     }
 
     /**
      * Creates new {@link Routing}.
      *
-     * @return routing configured with JSON support, a health check, and a service
+     * @return routing configured with JSON support, a health check, and a
+     * service
      * @param config configuration of this server
      */
-    private static Routing createRouting(Config config) {
+    static void routing(HttpRouting.Builder routing) {
 
-        var metrics = MetricsSupport.create();
-        var health = HealthSupport.builder()
-                .addLiveness(HealthChecks.healthChecks())   // Adds a convenient set of checks
-                .build();
+        // By default this will pick up application.yaml from the classpath
+        var config = Config.global();
+
         var corsSupport = CorsSupport.builder()
                 .addCrossOrigin(CrossOriginConfig.builder()
                         .allowOrigins("*")
@@ -121,14 +119,9 @@ public final class Main {
         var diveService = new SimpleQueryService(annosaurus, vampireSquid);
         var countService = new SimpleCountService(annosaurus, vampireSquid);
 
-
-        return Routing.builder()
-                .register(health)                   // Health at "/health"
-                .register(metrics)                  // Metrics at "/metrics"
-                .register("/n0", corsSupport, n0)
+        routing.register("/n0", corsSupport, n0)
                 .register("/query", corsSupport, diveService)
-                .register("/count", corsSupport, countService)
-                .build();
+                .register("/count", corsSupport, countService);
     }
 
     /**

@@ -1,23 +1,23 @@
 package org.mbari.charybdis.services;
 
-import io.helidon.webserver.Routing.Rules;
-import io.helidon.common.http.MediaType;
-import io.helidon.webserver.ServerRequest;
-import io.helidon.webserver.ServerResponse;
-import io.helidon.webserver.Service;
-import org.mbari.charybdis.DataGroup;
-// import org.mbari.jcommons.util.Logging;
 
-// import java.util.logging.Logger;
+
+import org.mbari.charybdis.DataGroup;
+
+import io.helidon.common.media.type.MediaTypes;
+import io.helidon.webserver.http.HttpRules;
+import io.helidon.webserver.http.HttpService;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
+
 
 /**
  * Kakani2019Nature
  */
-public class Kakani2019Nature implements Service {
+public class Kakani2019Nature implements HttpService {
 
   private final Annosaurus annosaurus;
   private final VampireSquid vampireSquid;
-  // private final Logging log = new Logging(getClass());
 
   public Kakani2019Nature(Annosaurus annosaurus, VampireSquid vampireSquid) {
     this.annosaurus = annosaurus;
@@ -25,18 +25,19 @@ public class Kakani2019Nature implements Service {
   }
 
   @Override
-  public void update(Rules rules) {
+  public void routing(HttpRules rules) {
     rules.get("/", this::defaultHandler);
   }
 
   private void defaultHandler(ServerRequest request, ServerResponse response) {
     // Get annotations, then get media, then package them together
-    response.headers().contentType(MediaType.APPLICATION_JSON);
-    annosaurus.findByLinkNameAndLinkValue("comment", "Nature20190609559")
-        .thenApply(as -> vampireSquid.findMediaForAnnotations(as)
+    response.headers().contentType(MediaTypes.APPLICATION_JSON);
+    var result = annosaurus.findByLinkNameAndLinkValue("comment", "Nature20190609559")
+        .thenCompose(as -> vampireSquid.findMediaForAnnotations(as)
                 .thenApply(ms -> new DataGroup(as, ms))
                 .thenApply(obj -> annosaurus.getGson().toJson(obj))
-                .thenAccept(response::send));
+        ).join();
+    response.send(result);
 
   }
 

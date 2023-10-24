@@ -1,10 +1,6 @@
 package org.mbari.charybdis.services;
 
-import io.helidon.common.http.MediaType;
-import io.helidon.webserver.Routing;
-import io.helidon.webserver.ServerRequest;
-import io.helidon.webserver.ServerResponse;
-import io.helidon.webserver.Service;
+
 import org.mbari.charybdis.DataGroup;
 import org.mbari.vars.core.util.AsyncUtils;
 import org.mbari.vars.services.model.Annotation;
@@ -16,11 +12,17 @@ import java.util.concurrent.atomic.AtomicLong;
 // import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import io.helidon.common.media.type.MediaTypes;
+import io.helidon.webserver.http.HttpRules;
+import io.helidon.webserver.http.HttpService;
+import io.helidon.webserver.http.ServerRequest;
+import io.helidon.webserver.http.ServerResponse;
+
 /**
  * @author Brian Schlining
  * @since 2019-11-13T15:03:00
  */
-public class SimpleQueryService implements Service {
+public class SimpleQueryService implements HttpService {
 
     private final Annosaurus annosaurus;
     private final VampireSquid vampireSquid;
@@ -28,11 +30,12 @@ public class SimpleQueryService implements Service {
 
     private record LimitOffset(Long limit, Long offset) {
         static Optional<LimitOffset> from(ServerRequest request) {
-            var offset = request.queryParams()
+
+            var offset = request.query()
                     .first("offset")
                     .map(Long::parseLong)
                     .orElse(0L);
-            return request.queryParams()
+            return request.query()
                     .first("limit")
                     .map(Long::parseLong)
                     .map(limit -> new LimitOffset(limit, offset));
@@ -51,7 +54,7 @@ public class SimpleQueryService implements Service {
     }
 
     @Override
-    public void update(Routing.Rules rules) {
+    public void routing(HttpRules rules) {
         rules.options((req, res) -> {
         }); // Needed for CORS
         rules.get("/concept/{concept}", this::byConceptHandler);
@@ -62,8 +65,7 @@ public class SimpleQueryService implements Service {
     private void byQueryConstraintsHandler(ServerRequest request, ServerResponse response) {
         try {
             var body = request.content()
-                    .as(String.class)
-                    .get(5000, TimeUnit.MILLISECONDS);
+                    .as(String.class);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -79,35 +81,40 @@ public class SimpleQueryService implements Service {
                 .from(request)
                 .orElse(new LimitOffset(-1L, -1L));
 
-        response.headers().contentType(MediaType.APPLICATION_JSON);
+        response.headers().contentType(MediaTypes.APPLICATION_JSON);
         String videoSequenceName = request.path()
                 .absolute()
-                .param("videoSequenceName");
+                .pathParameters()
+                .get("videoSequenceName");
 
-        vampireSquid.findMediaByVideoSequenceName(videoSequenceName)
+        var result = vampireSquid.findMediaByVideoSequenceName(videoSequenceName)
                 .thenCompose(media -> limitedRequest(media, limitOffset))
                 .thenApply(obj -> annosaurus.getGson().toJson(obj))
-                .thenAccept(response::send);
+                .join();
+
+        response.send(result);
 
     }
 
     private void byConceptHandler(ServerRequest request, ServerResponse response) {
         var limitOffset = LimitOffset.from(request);
 
-        response.headers().contentType(MediaType.APPLICATION_JSON);
+        response.headers().contentType(MediaTypes.APPLICATION_JSON);
         String concept = request.path()
                 .absolute()
-                .param("concept");
+                .pathParameters()
+                .get("concept");
         var future = limitOffset
                 .map(lo -> annosaurus.findByConcept(concept, lo.limit(), lo.offset()))
                 .orElseGet(() -> annosaurus.findByConcept(concept));
 
-        future.thenAccept(annos ->
+        var result = future.thenAccept(annos ->
             vampireSquid.findMediaForAnnotations(annos)
                     .thenApply(ms -> new DataGroup(annos, ms))
                     .thenApply(obj -> annosaurus.getGson().toJson(obj))
-                    .thenAccept(response::send)
-        );
+        ).join();
+
+        response.send(result);
     }
 
     private void byVideoFileNameHandler(ServerRequest request, ServerResponse response) {
@@ -115,15 +122,18 @@ public class SimpleQueryService implements Service {
                 .from(request)
                 .orElse(new LimitOffset(-1L, -1L));
 
-        response.headers().contentType(MediaType.APPLICATION_JSON);
+        response.headers().contentType(MediaTypes.APPLICATION_JSON);
         String videoFileName = request.path()
                 .absolute()
-                .param("videoFileName");
+                .pathParameters()
+                .get("videoFileName");
 
-        vampireSquid.findMediaByVideoFileName(videoFileName)
+        var result = vampireSquid.findMediaByVideoFileName(videoFileName)
                 .thenCompose(media -> limitedRequest(media, limitOffset))
                 .thenApply(obj -> annosaurus.getGson().toJson(obj))
-                .thenAccept(response::send);
+                .join();
+
+        response.send(result);
 
     }
 

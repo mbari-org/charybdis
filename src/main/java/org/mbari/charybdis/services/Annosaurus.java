@@ -6,7 +6,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.helidon.config.Config;
-// import org.mbari.charybdis.domain.ExtendedAnnotation;
+
 import org.mbari.jcommons.util.Logging;
 import org.mbari.vars.services.NoopAuthService;
 import org.mbari.vars.services.Pager;
@@ -23,7 +23,7 @@ import org.mbari.vars.services.model.ImagedMoment;
 import org.mbari.vcr4j.time.Timecode;
 
 import java.io.IOException;
-// import java.lang.System.Logger;
+
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;

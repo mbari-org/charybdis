@@ -18,7 +18,6 @@ package org.mbari.charybdis;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -49,9 +48,7 @@ public class MainTest {
     @AfterAll
     public static void stopServer() throws Exception {
         if (webServer != null) {
-            webServer.shutdown()
-                     .toCompletableFuture()
-                     .get(10, TimeUnit.SECONDS);
+            webServer.stop();
         }
     }
 
