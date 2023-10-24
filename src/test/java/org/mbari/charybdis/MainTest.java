@@ -16,20 +16,16 @@
 
 package org.mbari.charybdis;
 
-import java.io.OutputStream;
-import java.util.Collections;
-import java.util.concurrent.TimeUnit;
-import java.net.URL;
 import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
-
-
-import io.helidon.webserver.WebServer;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import io.helidon.webserver.WebServer;
 
 public class MainTest {
 

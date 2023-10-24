@@ -108,7 +108,6 @@ public class SimpleQueryService implements Service {
                     .thenApply(obj -> annosaurus.getGson().toJson(obj))
                     .thenAccept(response::send)
         );
-
     }
 
     private void byVideoFileNameHandler(ServerRequest request, ServerResponse response) {

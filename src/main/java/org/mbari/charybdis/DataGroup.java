@@ -1,9 +1,9 @@
 package org.mbari.charybdis;
 
+import java.util.List;
+
 import org.mbari.vars.services.model.Annotation;
 import org.mbari.vars.services.model.Media;
-
-import java.util.List;
 
 /**
  * @author Brian Schlining

@@ -54,5 +54,3 @@ ssh "$USER@quasar.shore.mbari.org" << 'ENDSSH'
     --restart unless-stopped \
     mbari/charybdis
 ENDSSH
-
-n
