@@ -5,7 +5,7 @@ Provides fixed endpoints of M3 annotation data used in publication. This allows 
 
 ## Build and run
 
-With JDK17+
+With JDK21+
 ```bash
 mvn package
 java -jar target/charybdis.jar
