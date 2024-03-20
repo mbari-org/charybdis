@@ -42,7 +42,7 @@
         <methanol.version>1.7.0</methanol.version>
         <rxjava3.version>3.1.8</rxjava3.version>
         <slf4j.version>2.0.0</slf4j.version>
-        <vars.version>1.5.1</vars.version>
+        <vars.version>2.0.5</vars.version>
         <vcr4j.version>5.2.0</vcr4j.version>
     </properties>
 
