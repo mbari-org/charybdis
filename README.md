@@ -1,110 +1,56 @@
 # charybdis
 
-Provides fixed endpoints of M3 annotation data used in publication. This allows reliable URL that can be published along with papers.
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
 
-## Build and run
+## Running the application in dev mode
 
-With JDK21+
-```bash
-mvn package
-java -jar target/charybdis.jar
+You can run your application in dev mode that enables live coding using:
+```shell script
+./mvnw compile quarkus:dev
 ```
 
-## Exercise the application
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
 
+## Packaging and running the application
+
+The application can be packaged using:
+```shell script
+./mvnw package
 ```
-curl -X GET http://localhost:8080/n0
-```
+It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-## Try health and metrics
+The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
 
-```
-curl -s -X GET http://localhost:8080/health
-{"outcome":"UP",...
-. . .
-
-# Prometheus Format
-curl -s -X GET http://localhost:8080/metrics
-# TYPE base:gc_g1_young_generation_count gauge
-. . .
-
-# JSON Format
-curl -H 'Accept: application/json' -X GET http://localhost:8080/metrics
-{"base":...
-. . .
-
+If you want to build an _über-jar_, execute the following command:
+```shell script
+./mvnw package -Dquarkus.package.type=uber-jar
 ```
 
-## Build the Docker Image
+The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
-```
-# We need our github access key to get VARS dependencies
-cp ~/.m2/settings.xml . 
-docker build -t mbari/charybdis .
-```
+## Creating a native executable
 
-## Start the application with Docker
-
-```
-docker run --rm -p 8080:8080 charybdis:latest
+You can create a native executable using: 
+```shell script
+./mvnw package -Dnative
 ```
 
-Exercise the application as described above
-
-## Deploy the application to Kubernetes
-
-```
-kubectl cluster-info                # Verify which cluster
-kubectl get pods                    # Verify connectivity to cluster
-kubectl create -f app.yaml   # Deply application
-kubectl get service charybdis  # Get service info
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 
+```shell script
+./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
-## Native image with GraalVM
+You can then execute your native executable with: `./target/charybdis-1.0.0-SNAPSHOT-runner`
 
-GraalVM allows you to compile your programs ahead-of-time into a native
- executable. See https://www.graalvm.org/docs/reference-manual/aot-compilation/
- for more information.
+If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.
 
-You can build a native executable in 2 different ways:
-* With a local installation of GraalVM
-* Using Docker
+## Provided Code
 
-### Local build
+### RESTEasy Reactive
 
-Download Graal VM at https://github.com/oracle/graal/releases, the versions
- currently supported for Helidon is `19.1.1` and `19.2.0`.
+Easily start your Reactive RESTful Web Services
 
-```
-# Setup the environment
-export GRAALVM_HOME=/path
-# build the native executable
-mvn package -Pnative-image
-```
-
-You can also put the Graal VM `bin` directory in your PATH, or pass
- `-DgraalVMHome=/path` to the Maven command.
-
-See https://github.com/oracle/helidon-build-tools/tree/master/helidon-maven-plugin
- for more information.
-
-Start the application:
-
-```
-./target/charybdis
-```
-
-### Multi-stage Docker build
-
-Build the "native" Docker Image
-
-```
-docker build -t charybdis-native -f Dockerfile.native .
-```
-
-Start the application:
-
-```
-docker run --rm -p 8080:8080 charybdis-native:latest
-```
+[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
