@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n%ex</pattern>
+    </encoder>
+  </appender>
+
+  <!-- VARS SDKs -->
+  <logger name="org.mbari.vars" level="INFO"/>
+
+  <!-- Kiota HTTP adapter — set to DEBUG to enable full request/response body logging -->
+  <logger name="org.mbari.vars.vampiresquid.sdk.VampireSquidFactory" level="INFO"/>
+  <logger name="com.microsoft.kiota" level="WARN"/>
+
+  <!-- OkHttp internals -->
+  <logger name="okhttp3" level="WARN"/>
+
+  <!-- Quarkus internals -->
+  <logger name="io.quarkus" level="INFO"/>
+  <logger name="io.vertx" level="WARN"/>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+</configuration>
