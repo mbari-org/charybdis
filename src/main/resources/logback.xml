@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration>
+<configuration scan="false" debug="false">
+
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+  <variable name="QUARKUS_LOG_LEVEL" value="${QUARKUS_LOG_LEVEL:-INFO}" />
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -8,20 +12,20 @@
   </appender>
 
   <!-- VARS SDKs -->
-  <logger name="org.mbari.vars" level="INFO"/>
+<!--  <logger name="org.mbari.vars" level="INFO"/>-->
 
-  <!-- Kiota HTTP adapter — set to DEBUG to enable full request/response body logging -->
-  <logger name="org.mbari.vars.vampiresquid.sdk.VampireSquidFactory" level="INFO"/>
-  <logger name="com.microsoft.kiota" level="WARN"/>
+<!--  &lt;!&ndash; Kiota HTTP adapter — set to DEBUG to enable full request/response body logging &ndash;&gt;-->
+<!--  <logger name="org.mbari.vars.vampiresquid.sdk.VampireSquidFactory" level="INFO"/>-->
+<!--  <logger name="com.microsoft.kiota" level="WARN"/>-->
 
-  <!-- OkHttp internals -->
-  <logger name="okhttp3" level="WARN"/>
+<!--  &lt;!&ndash; OkHttp internals &ndash;&gt;-->
+<!--  <logger name="okhttp3" level="WARN"/>-->
 
-  <!-- Quarkus internals -->
-  <logger name="io.quarkus" level="INFO"/>
-  <logger name="io.vertx" level="WARN"/>
+<!--  &lt;!&ndash; Quarkus internals &ndash;&gt;-->
+<!--  <logger name="io.quarkus" level="INFO"/>-->
+<!--  <logger name="io.vertx" level="WARN"/>-->
 
-  <root level="INFO">
+  <root level="${QUARKUS_LOG_LEVEL}">
     <appender-ref ref="CONSOLE"/>
   </root>
 
