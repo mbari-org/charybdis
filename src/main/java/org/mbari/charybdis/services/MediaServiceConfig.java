@@ -9,15 +9,9 @@ import java.time.Duration;
 public class MediaServiceConfig {
 
     @ConfigProperty(name = "media.service.timeout")
-    Integer timeoutSeconds;
-
-    private String normalizedEndpoint;
-    private Duration timeout;
+    Duration timeout;
 
     public Duration getTimeout() {
-        if (timeout == null) {
-            timeout = Duration.ofSeconds(timeoutSeconds);
-        }
         return timeout;
     }
 }
