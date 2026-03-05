@@ -11,7 +11,6 @@
     <jcommons.version>0.0.6</jcommons.version>
     <logback.version>1.4.11</logback.version>
     <maven.compiler.release>21</maven.compiler.release>
-    <methanol.version>1.7.0</methanol.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -58,16 +57,6 @@
       <groupId>org.mbari.vcr4j</groupId>
       <artifactId>vcr4j-core</artifactId>
       <version>${vcr4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.mizosoft.methanol</groupId>
-      <artifactId>methanol</artifactId>
-      <version>${methanol.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mbari.commons</groupId>
-      <artifactId>jcommons</artifactId>
-      <version>${jcommons.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>

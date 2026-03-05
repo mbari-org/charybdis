@@ -11,8 +11,8 @@ class Kakani2019NatureResourceTest {
     @Test
     void testN0Endpoint() {
         given()
-        .when().get("/n0")
-        .then()
-        .statusCode(200);
+            .when().get("/n0")
+                .then()
+                .statusCode(200);
     }
 }

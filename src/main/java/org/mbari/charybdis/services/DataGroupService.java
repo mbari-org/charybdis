@@ -28,7 +28,7 @@ public class DataGroupService {
 
     private record LimitOffset(Long limit, Long offset) {
         boolean isOk() {
-            return offset >= 0 || limit > 0;
+            return offset >= 0 && limit > 0;
         }
     }
 
