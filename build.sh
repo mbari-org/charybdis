@@ -13,7 +13,7 @@ docker buildx build \
     --platform linux/amd64,linux/arm64 \
     -t mbari/charybdis:${VCS_REF} \
     -t mbari/charybdis:latest \
-    -f Dockerfile \
+    -f src/main/docker/Dockerfile.jvm \
     --push . && docker pull mbari/charybdis:latest
 
 
