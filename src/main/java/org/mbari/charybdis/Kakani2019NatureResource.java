@@ -1,4 +1,4 @@
-package org.mbari.charybdis.api;
+package org.mbari.charybdis;
 
 import io.smallrye.common.annotation.RunOnVirtualThread;
 import jakarta.inject.Inject;
@@ -11,7 +11,7 @@ import org.mbari.charybdis.services.VampireSquid;
 import java.util.List;
 
 @Path(("/n0"))
-public class Kakani2019Nature {
+public class Kakani2019NatureResource {
 
     @Inject
     Annosaurus annosaurus;

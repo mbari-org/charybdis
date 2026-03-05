@@ -1,24 +1,13 @@
-package org.mbari.charybdis.api;
+package org.mbari.charybdis;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.mbari.charybdis.domain.DataGroup;
-import org.mbari.charybdis.services.Annosaurus;
 import org.mbari.charybdis.services.DataGroupService;
-import org.mbari.charybdis.services.VampireSquid;
 
 @Path("/query")
-public class SimpleQueries {
-
-    @Inject
-    Annosaurus annosaurus;
-
-    @Inject
-    VampireSquid vampireSquid;
+public class SimpleQueriesResource {
 
     @Inject
     DataGroupService dataGroupService;
@@ -26,9 +15,9 @@ public class SimpleQueries {
     @GET
     @Path("/concept/{concept}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DataGroup queryByConcept(String concept,
-                                    @PathParam("limit") Integer limit,
-                                    @PathParam("offset") Integer offset) {
+    public DataGroup queryByConcept(@PathParam("concept") String concept,
+                                    @DefaultValue("10000") @QueryParam("limit") Integer limit,
+                                    @DefaultValue("0") @QueryParam("offset") Integer offset) {
         limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByConcept(concept, limit, offset);
@@ -37,9 +26,9 @@ public class SimpleQueries {
     @GET
     @Path("/dive/{videoSequenceName}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DataGroup queryByDive(String videoSequenceName,
-                                 @PathParam("limit") Integer limit,
-                                 @PathParam("offset") Integer offset) {
+    public DataGroup queryByDive(@PathParam("videoSequenceName") String videoSequenceName,
+                                 @DefaultValue("10000") @QueryParam("limit") Integer limit,
+                                 @DefaultValue("0") @QueryParam("offset") Integer offset) {
         limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByDive(videoSequenceName, limit, offset);
@@ -48,10 +37,10 @@ public class SimpleQueries {
     @GET
     @Path("/file/{videoFileName}")
     @Produces(MediaType.APPLICATION_JSON)
-    public DataGroup queryByVideoFileName(String videoFileName,
-                                         @PathParam("limit") Integer limit,
-                                         @PathParam("offset") Integer offset) {
-        limit = limit == null || limit < 0 || limit > 5000 ? 100 : limit;
+    public DataGroup queryByVideoFileName(@PathParam("videoFileName") String videoFileName,
+                                         @DefaultValue("10000") @QueryParam("limit") Integer limit,
+                                         @DefaultValue("0") @QueryParam("offset") Integer offset) {
+        limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByFilename(videoFileName, limit, offset);
     }

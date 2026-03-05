@@ -1,8 +1,9 @@
-package org.mbari.charybdis.api;
+package org.mbari.charybdis;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import org.mbari.charybdis.domain.CountByMedia;
 import org.mbari.charybdis.etc.rxjava.AsyncUtils;
 import org.mbari.charybdis.services.Annosaurus;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Path("/count")
-public class SimpleCounts {
+public class SimpleCountsResource {
 
     @Inject
     AnnotationServiceConfig config;
@@ -29,7 +30,7 @@ public class SimpleCounts {
 
     @GET
     @Path("/dive/{videoSequenceName}")
-    public CountByMedia countMediaByVideoSequenceName(String videoSequenceName) throws ExecutionException, InterruptedException, TimeoutException {
+    public CountByMedia countMediaByVideoSequenceName(@PathParam("videoSequenceName") String videoSequenceName) throws ExecutionException, InterruptedException, TimeoutException {
         var media = vampireSquid.findMediaByVideoSequenceName(videoSequenceName);
         var service = annosaurus.getService();
         var future = AsyncUtils.collectAll(media, m -> service.countAnnotations(m.getVideoReferenceUuid()))
