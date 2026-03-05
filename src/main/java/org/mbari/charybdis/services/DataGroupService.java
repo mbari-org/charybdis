@@ -3,9 +3,10 @@ package org.mbari.charybdis.services;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.mbari.charybdis.domain.DataGroup;
-import org.mbari.vars.core.util.AsyncUtils;
-import org.mbari.vars.services.model.Annotation;
-import org.mbari.vars.services.model.Media;
+import org.mbari.charybdis.etc.rxjava.AsyncUtils;
+import org.mbari.vars.annosaurus.sdk.r1.models.Annotation;
+import org.mbari.vars.vampiresquid.sdk.r1.models.Media;
+
 
 import java.util.Comparator;
 import java.util.List;
@@ -34,9 +35,12 @@ public class DataGroupService {
     private record MediaPage(UUID videoReferenceUuid, LimitOffset limitOffset) {}
 
     public DataGroup findByConcept(String concept, long limit, long offset) {
-        var annotations = annosaurus.findByConcept(concept, limit, offset);
-        var media = vampireSquid.findMediaForAnnotations(annotations);
-        return new DataGroup(annotations, media);
+        return annosaurus.findByConcept(concept, limit, offset)
+                .thenApply( annos -> {
+                    var media = vampireSquid.findMediaForAnnotations(annos);
+                    return new DataGroup(annos, media);
+                })
+                .join();
     }
 
     public DataGroup findByDive(String videoSequenceName, long limit, long offset) {

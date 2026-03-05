@@ -1,6 +1,6 @@
 package org.mbari.charybdis.domain;
 
-import org.mbari.vars.services.model.AnnotationCount;
+import org.mbari.vars.annosaurus.sdk.r1.models.AnnotationCount;
 
 import java.util.List;
 

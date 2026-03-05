@@ -29,7 +29,7 @@ public class SimpleQueries {
     public DataGroup queryByConcept(String concept,
                                     @PathParam("limit") Integer limit,
                                     @PathParam("offset") Integer offset) {
-        limit = limit == null || limit < 0 || limit > 5000 ? 100 : limit;
+        limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByConcept(concept, limit, offset);
     }
@@ -40,7 +40,7 @@ public class SimpleQueries {
     public DataGroup queryByDive(String videoSequenceName,
                                  @PathParam("limit") Integer limit,
                                  @PathParam("offset") Integer offset) {
-        limit = limit == null || limit < 0 || limit > 5000 ? 100 : limit;
+        limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByDive(videoSequenceName, limit, offset);
     }

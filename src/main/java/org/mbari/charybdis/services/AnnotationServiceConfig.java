@@ -9,9 +9,6 @@ import java.time.Duration;
 @Singleton
 public class AnnotationServiceConfig {
 
-    @ConfigProperty(name = "annotation.service.url")
-    String endpoint;
-
     @ConfigProperty(name = "annotation.service.timeout")
     Integer timeoutSeconds;
 
@@ -20,13 +17,6 @@ public class AnnotationServiceConfig {
 
     private String normalizedEndpoint;
     private Duration timeout;
-
-    public String getEndpoint() {
-        if (normalizedEndpoint == null) {
-            normalizedEndpoint = endpoint.endsWith("/") ? endpoint.substring(0, endpoint.length() - 1) : endpoint;
-        }
-        return normalizedEndpoint;
-    }
 
     public Duration getTimeout() {
         if (timeout == null) {

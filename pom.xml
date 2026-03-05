@@ -4,8 +4,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mbari</groupId>
   <artifactId>charybdis</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <properties>
+    <annosaurus.version>0.0.18</annosaurus.version>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
     <jcommons.version>0.0.6</jcommons.version>
     <logback.version>1.4.11</logback.version>
@@ -15,11 +16,12 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.12.3</quarkus.platform.version>
+    <quarkus.platform.version>3.32.2</quarkus.platform.version>
+    <raziel.sdk.version>0.0.4</raziel.sdk.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
-    <vars.version>2.0.5</vars.version>
-    <vcr4j.version>5.3.0</vcr4j.version>
+    <vampiresquid.version>0.0.15</vampiresquid.version>
+    <vcr4j.version>5.3.1</vcr4j.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -39,13 +41,18 @@
     </dependency>
     <dependency>
       <groupId>org.mbari.vars</groupId>
-      <artifactId>org.mbari.vars.services</artifactId>
-      <version>${vars.version}</version>
+      <artifactId>annosaurus-java-sdk</artifactId>
+      <version>${annosaurus.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mbari.vars</groupId>
-      <artifactId>org.mbari.vars.core</artifactId>
-      <version>${vars.version}</version>
+      <artifactId>raziel-java-sdk</artifactId>
+      <version>${raziel.sdk.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mbari.vars</groupId>
+      <artifactId>vampire-squid-java-sdk</artifactId>
+      <version>${vampiresquid.version}</version>
     </dependency>
     <dependency>
       <groupId>org.mbari.vcr4j</groupId>
@@ -97,16 +104,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <repositories>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>github</id>
-      <name>github</name>
-      <url>https://maven.pkg.github.com/mbari-org/maven</url>
-    </repository>
-  </repositories>
   <build>
     <plugins>
       <plugin>
@@ -142,18 +139,6 @@
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>build</goal>
-              <goal>generate-code</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>

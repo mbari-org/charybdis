@@ -1,14 +1,13 @@
 package org.mbari.charybdis.services;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import org.mbari.jcommons.util.Logging;
-import org.mbari.vars.core.util.AsyncUtils;
-import org.mbari.vars.services.MediaService;
+import org.mbari.charybdis.etc.rxjava.AsyncUtils;
+import org.mbari.vars.annosaurus.sdk.r1.models.Annotation;
+import org.mbari.vars.vampiresquid.sdk.r1.MediaService;
+import org.mbari.vars.vampiresquid.sdk.r1.models.Media;
 
-import org.mbari.vars.services.model.Annotation;
-import org.mbari.vars.services.model.Media;
-
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,16 +18,15 @@ import java.util.stream.Collectors;
  * @author Brian Schlining
  * @since 2019-10-04T10:51:00
  */
-@ApplicationScoped
 public class VampireSquid {
 
-    @Inject
-    MediaService service;
+    private final MediaService service;
+    private final Duration timeout;
 
-    @Inject
-    MediaServiceConfig config;
-
-    private final Logging log = new Logging(getClass());
+    public VampireSquid(MediaService service, Duration timeout) {
+        this.service = service;
+        this.timeout = timeout;
+    }
 
     public MediaService getService() {
         return service;
@@ -40,16 +38,16 @@ public class VampireSquid {
                 .distinct()
                 .collect(Collectors.toList());
 
-        log.atInfo().log("Starting lookup of " + mediaUuids.size() + " media");
+        Log.info("Starting lookup of " + mediaUuids.size() + " media");
 
         try {
             return AsyncUtils.collectAll(mediaUuids, service::findByUuid)
                     .exceptionally( e -> {
-                        log.atWarn().withCause(e).log(() -> "Failed to fetch media");
+                        Log.warn("Failed to fetch media", e);
                         return Collections.emptyList();
                     })
                     .thenApply(ArrayList::new)
-                    .get(config.timeoutSeconds, TimeUnit.SECONDS);
+                    .get(timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -57,9 +55,9 @@ public class VampireSquid {
 
     public List<Media> findMediaByVideoSequenceName(String videoSequencename) {
         try {
-            return service.findByVideoSequenceName(videoSequencename).get(config.timeoutSeconds, TimeUnit.SECONDS);
+            return service.findByVideoSequenceName(videoSequencename).get(timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.atWarn().withCause(e).log(() -> "Failed to fetch media for videosequence named " + videoSequencename);
+            Log.warn("Failed to fetch media for videosequence named " + videoSequencename, e);
             throw new RuntimeException(e);
         }
 
@@ -67,9 +65,9 @@ public class VampireSquid {
 
     public List<Media> findMediaByVideoFileName(String videoFileName) {
         try {
-            return service.findByFilename(videoFileName).get(config.timeoutSeconds, TimeUnit.SECONDS);
+            return service.findByFilename(videoFileName).get(timeout.toSeconds(), TimeUnit.SECONDS);
         } catch (Exception e) {
-            log.atWarn().withCause(e).log(() -> "Failed to fetch media for file named " + videoFileName);
+            Log.warn("Failed to fetch media for file named " + videoFileName, e);
             throw new RuntimeException(e);
         }
     }

@@ -8,6 +8,8 @@ import org.mbari.charybdis.domain.DataGroup;
 import org.mbari.charybdis.services.Annosaurus;
 import org.mbari.charybdis.services.VampireSquid;
 
+import java.util.List;
+
 @Path(("/n0"))
 public class Kakani2019Nature {
 
@@ -20,9 +22,10 @@ public class Kakani2019Nature {
     @GET()
     @RunOnVirtualThread
     public DataGroup getNature() {
-        var annotations = annosaurus.findByLinkNameAndLinkValue("comment", "Nature20190609559");
-        var media = vampireSquid.findMediaForAnnotations(annotations);
-        return new DataGroup(annotations, media);
+//        var annotations = annosaurus.findByLinkNameAndLinkValue("comment", "Nature20190609559");
+//        var media = vampireSquid.findMediaForAnnotations(annotations);
+//        return new DataGroup(annotations, media);
+        return new DataGroup(List.of(), List.of());
     }
 
 }
