@@ -1,0 +1,6221 @@
+openapi: 3.0.0
+info:
+  title: annosaurus
+  version: 1.0.10
+paths:
+  /v1/auth:
+    post:
+      tags:
+      - Authorization
+      description: 'Exchange an API key for a JWT. Header format is `Authorization:
+        APIKEY <key>`'
+      operationId: authenticate
+      parameters:
+      - name: Authorization
+        in: header
+        description: 'Header format is `Authorization: APIKEY <key>`'
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/health:
+    get:
+      tags:
+      - Health
+      description: Health check
+      operationId: health
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/histogram/depth:
+    post:
+      tags:
+      - Analysis
+      description: Generate a histogram of depths base on the query constraints
+      operationId: depthHistogram
+      parameters:
+      - name: size
+        in: query
+        description: Bin size in meters
+        required: false
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        description: Query constraints
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryConstraints'
+        required: true
+      responses:
+        '200':
+          description: Histogram of depths
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryConstraintsResponseSC_DepthHistogramSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/histogram/time:
+    post:
+      tags:
+      - Analysis
+      description: Generate a histogram of times base on the query constraints
+      operationId: timeHistogram
+      parameters:
+      - name: size
+        in: query
+        description: Bin size in days
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 50
+      requestBody:
+        description: Query constraints
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryConstraints'
+        required: true
+      responses:
+        '200':
+          description: Histogram of time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryConstraintsResponseSC_TimeHistogramSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/annotations/bulk:
+    put:
+      tags:
+      - Annotations
+      description: Update multiple annotations. This will not update imageReferences,
+        associations, or ancillary data
+      operationId: bulkUpdateAnnotations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnnotationUpdateSC'
+        required: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+    post:
+      tags:
+      - Annotations
+      description: Create a new annotation
+      operationId: bulkCreateAnnotations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BulkAnnotationSC'
+        required: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/annotations/concurrent/count:
+    post:
+      tags:
+      - Annotations
+      description: Count concurrent annotations. JSON body can be snake_case or camelCase
+      operationId: countConcurrentAnnotations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConcurrentRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConcurrentRequestCountSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/annotations/imagereference/{imageReferenceUuid}:
+    get:
+      tags:
+      - Annotations
+      description: Find an annotation by its image reference UUID
+      operationId: findAnnotationByImageReferenceUuid
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/annotations/multi/count:
+    post:
+      tags:
+      - Annotations
+      description: Count multiple annotations. JSON body can be snake_case or camelCase
+      operationId: countMultiAnnotations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultiRequestCountSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/annotations/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Annotations
+      description: Find annotations by its video reference UUID
+      operationId: findAnnotationsByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/annotations/{observationUuid}:
+    get:
+      tags:
+      - Annotations
+      description: Find an annotation by its UUID
+      operationId: findAnnotationByUuid
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Annotations
+      description: Update an annotation. The request body can be camelCase or snake_case
+      operationId: updateAnnotation
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnotationUpdateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnnotationUpdateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/annotations:
+    post:
+      tags:
+      - Annotations
+      description: Create a new annotation
+      operationId: createAnnotation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnnotationCreateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AnnotationCreateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/associations/delete:
+    post:
+      tags:
+      - Associations
+      description: Delete a list of associations by their UUIDs
+      operationId: deleteAssociations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+        required: false
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/associations/bulk:
+    put:
+      tags:
+      - Associations
+      description: Update a list of associations
+      operationId: updateAssociations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AssociationSC'
+        required: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssociationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/associations/conceptassociations:
+    post:
+      tags:
+      - Associations
+      description: Find associations by concept association request. Request can be
+        camelCase or snake_case. Response will be snake_case.
+      operationId: findAssociationsByConceptAssociationRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConceptAssociationRequest'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptAssociationResponseSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/associations/toconcept/count/{concept}:
+    get:
+      tags:
+      - Associations
+      description: Count associations by toConcept
+      operationId: countAssociationsByToConcept
+      parameters:
+      - name: concept
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptCount'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/associations/toconcept/rename:
+    put:
+      tags:
+      - Associations
+      description: Rename toConcept
+      operationId: renameToConcept
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenameConcept'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RenameConcept'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenameCountSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/associations/{videoReferenceUuid}/{linkName}:
+    get:
+      tags:
+      - Associations
+      description: Find associations by its videoReferenceUuid and linkName
+      operationId: findAssociationsByVideoReferenceUuidAndLinkName
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: linkName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: concept
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssociationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/associations/{associationUuid}:
+    get:
+      tags:
+      - Associations
+      description: Find an association by its UUID
+      operationId: findAssociationByUuid
+      parameters:
+      - name: associationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Associations
+      description: Update an association
+      operationId: updateAssociation
+      parameters:
+      - name: associationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssociationUpdateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssociationUpdateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+    delete:
+      tags:
+      - Associations
+      description: Delete an association
+      operationId: deleteAssociation
+      parameters:
+      - name: associationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/associations:
+    post:
+      tags:
+      - Associations
+      description: Create an association
+      operationId: createAssociation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssociationSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssociationSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssociationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/ancillarydata/bulk:
+    post:
+      tags:
+      - Ancillary Data
+      description: Create many ancillary data
+      operationId: createOrUpdateManyData
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        required: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/ancillarydata/imagedmoment/{imagedMomentUuid}:
+    get:
+      tags:
+      - Ancillary Data
+      description: Find ancillary data by imaged moment UUID
+      operationId: findDataByImagedMomentUuid
+      parameters:
+      - name: imagedMomentUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/ancillarydata/merge/{videoReferenceUuid}:
+    put:
+      tags:
+      - Ancillary Data
+      description: Merge one ancillary data
+      operationId: mergeManyData
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: window
+        in: query
+        description: Window in seconds to merge data. Default is +/-7.5.
+        required: false
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        required: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/ancillarydata/observation/{observationUuid}:
+    get:
+      tags:
+      - Ancillary Data
+      description: Find ancillary data by observation UUID
+      operationId: findDataByObservationUuid
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/ancillarydata/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Ancillary Data
+      description: Find ancillary data by video reference UUID
+      operationId: findDataByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    delete:
+      tags:
+      - Ancillary Data
+      description: Delete ancillary data by video reference UUID
+      operationId: deleteDataByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountForVideoReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/ancillarydata/{ancillaryDataUuid}:
+    get:
+      tags:
+      - Ancillary Data
+      description: Find ancillary data by UUID
+      operationId: findDataByUuid
+      parameters:
+      - name: ancillaryDataUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Ancillary Data
+      description: Update one ancillary data
+      operationId: updateOneDatum
+      parameters:
+      - name: ancillaryDataUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CachedAncillaryDatumSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/ancillarydata:
+    post:
+      tags:
+      - Ancillary Data
+      description: Create one ancillary data
+      operationId: createOneDatum
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CachedAncillaryDatumSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/videoreferences/missioncontact/{missioncontact}:
+    get:
+      tags:
+      - Video Information
+      description: Find video references by mission contact
+      operationId: findByMissionContact
+      parameters:
+      - name: missioncontact
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/videoreferences/missioncontacts:
+    get:
+      tags:
+      - Video Information
+      description: Find all mission contacts
+      operationId: findAllMissionContacts
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/videoreferences/missionid/{missionid}:
+    get:
+      tags:
+      - Video Information
+      description: Find video references by mission ID
+      operationId: findByMissionId
+      parameters:
+      - name: missionid
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/videoreferences/missionids:
+    get:
+      tags:
+      - Video Information
+      description: Find all mission IDs
+      operationId: findAllMissionIds
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/videoreferences/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Video Information
+      description: Find a video reference info by a video reference UUID
+      operationId: findByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/videoreferences/videoreferences:
+    get:
+      tags:
+      - Video Information
+      description: Find all video reference UUIDs
+      operationId: findAllVideoReferenceUuids
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/videoreferences/{videoInfoUuid}:
+    get:
+      tags:
+      - Video Information
+      description: Find a video reference by UUID
+      operationId: findByUuid
+      parameters:
+      - name: videoInfoUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Video Information
+      description: Update a video reference
+      operationId: updateOneVideoReferenceInfo
+      parameters:
+      - name: videoInfoUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CachedVideoReferenceInfoUpdateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CachedVideoReferenceInfoUpdateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+    delete:
+      tags:
+      - Video Information
+      description: Delete a video reference
+      operationId: deleteOneVideoReferenceInfo
+      parameters:
+      - name: videoInfoUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/videoreferences:
+    get:
+      tags:
+      - Video Information
+      description: Find all video references
+      operationId: findAll
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    post:
+      tags:
+      - Video Information
+      description: Create a video reference
+      operationId: createOneVideoReferenceInfo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CachedVideoReferenceInfoCreateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CachedVideoReferenceInfoCreateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CachedVideoReferenceInfoSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/fast/concept/images/{concept}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations with images by concept
+      operationId: findAnnotationsWithImagesByConcept
+      parameters:
+      - name: concept
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/concept/{concept}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by concept
+      operationId: findAnnotationsByConcept
+      parameters:
+      - name: concept
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/concurrent:
+    post:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by concurrent request
+      operationId: findAnnotationsByConcurrentRequest
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConcurrentRequestSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/count:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Count all annotations
+      operationId: countAllAnnotations
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    post:
+      tags:
+      - Fast Annotation Queries
+      description: Count annotations by query constraints. Constraints can be snake_case
+        or camelCase. The response will be in snake_case.
+      operationId: countAnnotationsByQueryConstraints
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryConstraints'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryConstraintsResponseSC_Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/details/{link_name}/{link_value}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by link name and link value
+      operationId: findAnnotationsByLinkNameAndLinkValue
+      parameters:
+      - name: link_name
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: link_value
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/georange:
+    post:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by query constraints. Constraints can be snake_case
+        or camelCase. The response will be in snake_case.
+      operationId: postV1FastGeorange
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryConstraints'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryConstraintsResponseSC_GeographicRangeSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/imagedmoments/concept/images/{concept}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find image moment UUIDs by concept
+      operationId: findImageMomentUuidsByConcept
+      parameters:
+      - name: concept
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/imagedmoments/toconcept/images/{toconcept}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find image moment UUIDs by to concept
+      operationId: findImagedMomentUuidsByToConcept
+      parameters:
+      - name: toconcept
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/images/count/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Count annotations with images by video reference UUID
+      operationId: countImagesByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/images/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations with images by video reference UUID
+      operationId: findImagesByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/multi:
+    post:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by multi request
+      operationId: findAnnotationsByMultiRequest
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiRequestSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/toconcept/images/{toconcept}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations with images by to concept
+      operationId: findAnnotationsWithImagesByToConcept
+      parameters:
+      - name: toconcept
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by video reference UUID
+      operationId: findAnnotationsByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    delete:
+      tags:
+      - Fast Annotation Queries
+      description: Delete annotations by video reference UUID
+      operationId: deleteAnnotationsByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCountSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/fast:
+    get:
+      tags:
+      - Fast Annotation Queries
+      description: Find all annotations
+      operationId: findAllAnnotations
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: data
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    post:
+      tags:
+      - Fast Annotation Queries
+      description: Find annotations by query constraints. Constraints can be snake_case
+        or camelCase. The response will be in snake_case.
+      operationId: findAnnotationsByQueryConstraints
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryConstraints'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryConstraintsResponseSC_Seq_AnnotationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/concept/count/{conceptName}:
+    get:
+      tags:
+      - Imaged Moments
+      operationId: getV1ImagedmomentsConceptCountConceptname
+      parameters:
+      - name: conceptName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptCount'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/concept/images/count/{conceptName}:
+    get:
+      tags:
+      - Imaged Moments
+      operationId: getV1ImagedmomentsConceptImagesCountConceptname
+      parameters:
+      - name: conceptName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptCount'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/concept/images/{conceptName}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments with a given concept name that have images
+      operationId: findImagedMomentsByConceptNameWithImages
+      parameters:
+      - name: conceptName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/concept/{conceptName}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments with a given concept name
+      operationId: findImagedMomentsByConceptName
+      parameters:
+      - name: conceptName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/count/linkname/{linkName}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments with an observation that has an association
+        using the given link name
+      operationId: countImagedMomentsByLinkName
+      parameters:
+      - name: linkName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/count/images/{videoReferenceUuid}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments with images for a given video reference
+        UUID
+      operationId: countImagesForVideoReference
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/count/images:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments with images
+      operationId: countImagedMomentsWithImages
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/count/all:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments
+      operationId: countAllImagedMoments
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/counts:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments per video reference
+      operationId: countsPerVideoReference
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountForVideoReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/find/linkname/{linkName}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments with a given link name
+      operationId: findImagedMomentsByLinkName
+      parameters:
+      - name: linkName
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/find/images:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments with images
+      operationId: findImagedMomentsWithImages
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/imagereference/{imageReferenceUuid}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments for a given image reference UUID
+      operationId: findByImageReferenceUUID
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/modified/count/{start}/{end}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments modified between two dates
+      operationId: countImagedMomentsBetweenModifiedDates
+      parameters:
+      - name: start
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: end
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/modified/{start}/{end}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments modified between two dates
+      operationId: findImagedMomentsBetweenModifiedDates
+      parameters:
+      - name: start
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: end
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/newtime/{videoReferenceUuid}/{time}:
+    put:
+      tags:
+      - Imaged Moments
+      description: Recalculate recorded timestamps for a given video reference UUID
+        using a new start time and the imagedmoments elapsed time
+      operationId: updateRecordedTimestampsForVideoReference
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: time
+        in: path
+        description: Use compact iso8601
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/imagedmoments/observation/{observationUuid}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find an imaged moment for a given observation UUID
+      operationId: findByObservationUUID
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/tapetime:
+    put:
+      tags:
+      - Imaged Moments
+      description: Recalculate recorded timestamps for a given video reference UUID
+        using a new start time and the imagedmoments elapsed time. Annotations need
+        observation_uuid and recorded_timestamp fields. This is not an atomic operation
+      operationId: updateRecordedTimestampForObservationUuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnnotationSC'
+        required: false
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagedMomentTimestampUpdateSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/imagedmoments/videoreference/modified/{uuid}/{date}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Count all imaged moments modifed before a given date for a given
+        video reference UUID
+      operationId: countModifiedBeforeDate
+      parameters:
+      - name: uuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: date
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountForVideoReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments for a given video reference UUID
+      operationId: findByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    delete:
+      tags:
+      - Imaged Moments
+      description: Delete all imaged moments for a given video reference UUID
+      operationId: deleteByVideoReferenceUUID
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountForVideoReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/videoreference:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all video reference UUIDs
+      operationId: findAllVideoReferenceUUIDs
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/windowrequest:
+    post:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments for a given window request
+      operationId: findImagedMomentsByWindowRequest
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WindowRequestSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/imagedmoments/{imagedMomentUuid}:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find an imaged moment by UUID
+      operationId: findImagedMomentByUUID
+      parameters:
+      - name: imagedMomentUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Imaged Moments
+      description: Update an imaged moment
+      operationId: updateImagedMoment
+      parameters:
+      - name: imagedMomentUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VideoTimestampSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VideoTimestampSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+    delete:
+      tags:
+      - Imaged Moments
+      description: Delete an imaged moment
+      operationId: deleteImagedMoment
+      parameters:
+      - name: imagedMomentUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/imagedmoments:
+    get:
+      tags:
+      - Imaged Moments
+      description: Find all imaged moments
+      operationId: findAllImagedMoments
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImagedMomentSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/images/name/{imageFileName}:
+    get:
+      tags:
+      - Images
+      description: Find images by the image file's name
+      operationId: findByImageName
+      parameters:
+      - name: imageFileName
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/images/url/{url}:
+    get:
+      tags:
+      - Images
+      description: Find images by the image file's URL
+      operationId: findByImageUrl
+      parameters:
+      - name: url
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/images/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Images
+      description: Find images by video reference UUID
+      operationId: findByVideoReferenceUUID
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/images/{imageReferenceUuid}:
+    get:
+      tags:
+      - Images
+      description: Find an image by its UUID
+      operationId: findOneImage
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Images
+      description: Update an image
+      operationId: updateOneImage
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageUpdateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageUpdateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/images:
+    post:
+      tags:
+      - Images
+      description: Create a new image
+      operationId: createOneImage
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageCreateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageCreateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/imagereferences/{imageReferenceUuid}:
+    get:
+      tags:
+      - Image References
+      operationId: getV1ImagereferencesImagereferenceuuid
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Image References
+      description: Update an image reference by its UUID and a json or form body
+      operationId: updateImageReferenceByUuid
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImageReferenceSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ImageReferenceSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImageReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+    delete:
+      tags:
+      - Image References
+      description: Delete an image reference by its UUID
+      operationId: deleteImageByUuid
+      parameters:
+      - name: imageReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/index/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Time Indices
+      operationId: getV1IndexVideoreferenceVideoreferenceuuid
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: The IndexEntity objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/index/tapetime:
+    put:
+      tags:
+      - Time Indices
+      description: Bulk update the recordedTimestamp of multiple indices
+      operationId: bulkUpdateRecordedTimestamps
+      requestBody:
+        description: Index update objects
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/IndexUpdateSC'
+        required: false
+      responses:
+        '200':
+          description: The Modified index objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IndexSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/observations/activities:
+    get:
+      tags:
+      - Observations
+      description: List all activities found in the database
+      operationId: findActivities
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/bulk:
+    put:
+      tags:
+      - Observations
+      description: Update many observations. The observations to update are provided
+        in the request body as a JSON array
+      operationId: updateManyObservations
+      requestBody:
+        description: Describes the parameters and uuids of the observations to update.
+          Can be camelCase or snake_case.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationsUpdate'
+        required: true
+      responses:
+        '200':
+          description: The number of observations updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/observations/association/{associationUuid}:
+    get:
+      tags:
+      - Observations
+      description: Find an observation by one of its association UUIDs
+      operationId: findObservationByAssociationUuid
+      parameters:
+      - name: associationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObservationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/concept/count/{concept}:
+    get:
+      tags:
+      - Observations
+      description: Count the number of observations for a given concept
+      operationId: countObservationsByConcept
+      parameters:
+      - name: concept
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptCount'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/concept/images/count/{concept}:
+    get:
+      tags:
+      - Observations
+      description: Count the number of observations with images for a given concept
+      operationId: countImagesByConcept
+      parameters:
+      - name: concept
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConceptCount'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/concept/rename:
+    put:
+      tags:
+      - Observations
+      description: Rename a concept in all observations
+      operationId: renameConcept
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RenameConcept'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RenameConcept'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RenameCountSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/observations/concepts/{videoReferenceUuid}:
+    get:
+      tags:
+      - Observations
+      description: List all concepts used to annotation in a given video reference
+        UUID
+      operationId: findConceptsByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/concepts:
+    get:
+      tags:
+      - Observations
+      description: List all concepts found in the database
+      operationId: findAllConcepts
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/counts:
+    get:
+      tags:
+      - Observations
+      description: Count the number of observations for all video reference UUIDs
+      operationId: countAllGroupByVideoReferenceUuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CountForVideoReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/delete/duration/{observationUuid}:
+    put:
+      tags:
+      - Observations
+      description: Delete the duration of an observation
+      operationId: deleteDuration
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObservationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/observations/delete:
+    post:
+      tags:
+      - Observations
+      description: Delete many observations. The UUIDs of the observations to delete
+        are provided in the request body as a JSON array
+      operationId: deleteManyObservations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                format: uuid
+        required: false
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+  /v1/observations/groups:
+    get:
+      tags:
+      - Observations
+      description: List all groups found in the database
+      operationId: findGroups
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/videoreference/count/{videoReferenceUuid}:
+    get:
+      tags:
+      - Observations
+      description: Count the number of observations for a given video reference UUID.
+        If start and end query params are provided, then the count will be limited
+        to observations between those timestamps
+      operationId: countByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: start
+        in: query
+        description: Start timestamp as compact ISO-8601 string
+        required: false
+        schema:
+          type: string
+      - name: end
+        in: query
+        description: End timestamp as compact ISO-8601 string
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountForVideoReferenceSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/videoreference/{videoReferenceUuid}:
+    get:
+      tags:
+      - Observations
+      description: Find observations by video reference UUID
+      operationId: findObservationsByVideoReferenceUuid
+      parameters:
+      - name: videoReferenceUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ObservationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+  /v1/observations/{observationUuid}:
+    get:
+      tags:
+      - Observations
+      description: Find an observation by its UUID
+      operationId: findObservationByUuid
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObservationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+    put:
+      tags:
+      - Observations
+      description: Update an observation. If the observation timestamp is not provided,
+        then it will be set to the current time
+      operationId: updateOneObservation
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObservationUpdateSC'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ObservationUpdateSC'
+        required: true
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObservationSC'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+    delete:
+      tags:
+      - Observations
+      description: Delete an observation
+      operationId: deleteOneObservation
+      parameters:
+      - name: observationUuid
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: ''
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+      security:
+      - {}
+      - httpAuth: []
+components:
+  schemas:
+    AnnotationCreateSC:
+      title: AnnotationCreateSC
+      required:
+      - video_reference_uuid
+      - concept
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        concept:
+          type: string
+        activity:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        group:
+          type: string
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+        observation_timestamp:
+          type: string
+        observation_uuid:
+          type: string
+          format: uuid
+        observer:
+          type: string
+        recorded_timestamp:
+          type: string
+        timecode:
+          type: string
+    AnnotationSC:
+      title: AnnotationSC
+      type: object
+      properties:
+        activity:
+          type: string
+        ancillary_data:
+          $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociationSC'
+        concept:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        group:
+          type: string
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+        image_references:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageReferenceSC'
+        observation_timestamp:
+          type: string
+        observation_uuid:
+          type: string
+          format: uuid
+        observer:
+          type: string
+        recorded_timestamp:
+          type: string
+        timecode:
+          type: string
+        video_reference_uuid:
+          type: string
+          format: uuid
+        last_udpated:
+          type: string
+    AnnotationUpdateSC:
+      title: AnnotationUpdateSC
+      type: object
+      properties:
+        observation_uuid:
+          type: string
+          format: uuid
+        video_reference_uuid:
+          type: string
+          format: uuid
+        concept:
+          type: string
+        observer:
+          type: string
+        observation_timestamp:
+          type: string
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+        group:
+          type: string
+        activity:
+          type: string
+    AssociationSC:
+      title: AssociationSC
+      required:
+      - link_name
+      - to_concept
+      - link_value
+      type: object
+      properties:
+        link_name:
+          type: string
+        to_concept:
+          type: string
+        link_value:
+          type: string
+        mime_type:
+          type: string
+        uuid:
+          type: string
+          format: uuid
+        last_updated_time:
+          type: string
+        observation_uuid:
+          type: string
+          format: uuid
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+    AssociationUpdateSC:
+      title: AssociationUpdateSC
+      type: object
+      properties:
+        link_name:
+          type: string
+        to_concept:
+          type: string
+        link_value:
+          type: string
+        mime_type:
+          type: string
+        observation_uuid:
+          type: string
+          format: uuid
+    AuthorizationSC:
+      title: AuthorizationSC
+      required:
+      - token_type
+      - access_token
+      type: object
+      properties:
+        token_type:
+          type: string
+        access_token:
+          type: string
+    BadRequest:
+      title: BadRequest
+      required:
+      - message
+      - responseCode
+      type: object
+      properties:
+        message:
+          type: string
+        responseCode:
+          type: integer
+          format: int32
+    BulkAnnotationSC:
+      title: BulkAnnotationSC
+      type: object
+      properties:
+        activity:
+          type: string
+        ancillary_data:
+          $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociationSC'
+        concept:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        group:
+          type: string
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+        image_references:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageReferenceSC'
+        observation_timestamp:
+          type: string
+        observation_uuid:
+          type: string
+          format: uuid
+        observer:
+          type: string
+        recorded_timestamp:
+          type: string
+        timecode:
+          type: string
+        video_reference_uuid:
+          type: string
+          format: uuid
+    CachedAncillaryDatumSC:
+      title: CachedAncillaryDatumSC
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        depth_meters:
+          type: number
+          format: float
+        altitude:
+          type: number
+          format: float
+        crs:
+          type: string
+        salinity:
+          type: number
+          format: float
+        temperature_celsius:
+          type: number
+          format: float
+        oxygen_ml_l:
+          type: number
+          format: float
+        pressure_dbar:
+          type: number
+          format: float
+        light_transmission:
+          type: number
+          format: float
+        x:
+          type: number
+          format: double
+        y:
+          type: number
+          format: double
+        z:
+          type: number
+          format: double
+        pose_position_units:
+          type: string
+        phi:
+          type: number
+          format: double
+        theta:
+          type: number
+          format: double
+        psi:
+          type: number
+          format: double
+        uuid:
+          type: string
+          format: uuid
+        last_updated_time:
+          type: string
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+        recorded_timestamp:
+          type: string
+    CachedVideoReferenceInfoCreateSC:
+      title: CachedVideoReferenceInfoCreateSC
+      required:
+      - video_reference_uuid
+      - platform_name
+      - mission_id
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        platform_name:
+          type: string
+        mission_id:
+          type: string
+        mission_contact:
+          type: string
+    CachedVideoReferenceInfoSC:
+      title: CachedVideoReferenceInfoSC
+      required:
+      - uuid
+      - video_reference_uuid
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        video_reference_uuid:
+          type: string
+          format: uuid
+        platform_name:
+          type: string
+        mission_id:
+          type: string
+        mission_contact:
+          type: string
+        last_updated:
+          type: string
+    CachedVideoReferenceInfoUpdateSC:
+      title: CachedVideoReferenceInfoUpdateSC
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        platform_name:
+          type: string
+        mission_id:
+          type: string
+        mission_contact:
+          type: string
+    ConceptAssociationRequest:
+      title: ConceptAssociationRequest
+      required:
+      - linkName
+      type: object
+      properties:
+        videoReferenceUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        linkName:
+          type: string
+    ConceptAssociationRequestSC:
+      title: ConceptAssociationRequestSC
+      required:
+      - link_name
+      type: object
+      properties:
+        video_reference_uuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        link_name:
+          type: string
+    ConceptAssociationResponseSC:
+      title: ConceptAssociationResponseSC
+      required:
+      - concept_association_request
+      type: object
+      properties:
+        concept_association_request:
+          $ref: '#/components/schemas/ConceptAssociationRequestSC'
+        concept_associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConceptAssociationSC'
+    ConceptAssociationSC:
+      title: ConceptAssociationSC
+      required:
+      - uuid
+      - video_reference_uuid
+      - concept
+      - link_name
+      - to_concept
+      - link_value
+      - mime_type
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        video_reference_uuid:
+          type: string
+          format: uuid
+        concept:
+          type: string
+        link_name:
+          type: string
+        to_concept:
+          type: string
+        link_value:
+          type: string
+        mime_type:
+          type: string
+    ConceptCount:
+      title: ConceptCount
+      required:
+      - concept
+      - count
+      type: object
+      properties:
+        concept:
+          type: string
+        count:
+          type: integer
+          format: int64
+    ConcurrentRequest:
+      title: ConcurrentRequest
+      required:
+      - startTimestamp
+      - endTimestamp
+      type: object
+      properties:
+        startTimestamp:
+          type: string
+        endTimestamp:
+          type: string
+        videoReferenceUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    ConcurrentRequestCountSC:
+      title: ConcurrentRequestCountSC
+      required:
+      - concurrent_request
+      - count
+      type: object
+      properties:
+        concurrent_request:
+          $ref: '#/components/schemas/ConcurrentRequestSC'
+        count:
+          type: integer
+          format: int64
+    ConcurrentRequestSC:
+      title: ConcurrentRequestSC
+      required:
+      - start_timestamp
+      - end_timestamp
+      type: object
+      properties:
+        start_timestamp:
+          type: string
+        end_timestamp:
+          type: string
+        video_reference_uuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    Count:
+      title: Count
+      required:
+      - count
+      type: object
+      properties:
+        count:
+          type: integer
+          format: int64
+    CountForVideoReferenceSC:
+      title: CountForVideoReferenceSC
+      required:
+      - video_reference_uuid
+      - count
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        count:
+          type: integer
+          format: int32
+    DeleteCountSC:
+      title: DeleteCountSC
+      required:
+      - video_reference_uuid
+      - ancillary_data_count
+      - image_reference_count
+      - association_count
+      - observation_count
+      - imaged_moment_count
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        ancillary_data_count:
+          type: integer
+          format: int32
+        image_reference_count:
+          type: integer
+          format: int32
+        association_count:
+          type: integer
+          format: int32
+        observation_count:
+          type: integer
+          format: int32
+        imaged_moment_count:
+          type: integer
+          format: int32
+        error_message:
+          type: string
+    DepthHistogramSC:
+      title: DepthHistogramSC
+      type: object
+      properties:
+        bins_min:
+          type: array
+          items:
+            type: integer
+            format: int32
+        bins_max:
+          type: array
+          items:
+            type: integer
+            format: int32
+        values:
+          type: array
+          items:
+            type: integer
+            format: int32
+    GeographicRangeSC:
+      title: GeographicRangeSC
+      required:
+      - min_latitude
+      - max_latitude
+      - min_longitude
+      - max_longitude
+      - min_depth_meters
+      - max_depth_meters
+      type: object
+      properties:
+        min_latitude:
+          type: number
+          format: double
+        max_latitude:
+          type: number
+          format: double
+        min_longitude:
+          type: number
+          format: double
+        max_longitude:
+          type: number
+          format: double
+        min_depth_meters:
+          type: number
+          format: double
+        max_depth_meters:
+          type: number
+          format: double
+    HealthStatus:
+      title: HealthStatus
+      required:
+      - jdkVersion
+      - availableProcessors
+      - freeMemory
+      - maxMemory
+      - totalMemory
+      - application
+      - version
+      - description
+      type: object
+      properties:
+        jdkVersion:
+          type: string
+        availableProcessors:
+          type: integer
+          format: int32
+        freeMemory:
+          type: integer
+          format: int64
+        maxMemory:
+          type: integer
+          format: int64
+        totalMemory:
+          type: integer
+          format: int64
+        application:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+    ImageCreateSC:
+      title: ImageCreateSC
+      required:
+      - video_reference_uuid
+      - url
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        url:
+          type: string
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+        format:
+          type: string
+        width_pixels:
+          type: integer
+          format: int32
+        height_pixels:
+          type: integer
+          format: int32
+        description:
+          type: string
+    ImageReferenceSC:
+      title: ImageReferenceSC
+      required:
+      - url
+      type: object
+      properties:
+        url:
+          type: string
+        format:
+          type: string
+        width_pixels:
+          type: integer
+          format: int32
+        height_pixels:
+          type: integer
+          format: int32
+        description:
+          type: string
+        uuid:
+          type: string
+          format: uuid
+        last_updated_time:
+          type: string
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+    ImageSC:
+      title: ImageSC
+      required:
+      - image_reference_uuid
+      - video_reference_uuid
+      - imaged_moment_uuid
+      type: object
+      properties:
+        image_reference_uuid:
+          type: string
+          format: uuid
+        video_reference_uuid:
+          type: string
+          format: uuid
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+        format:
+          type: string
+        width_pixels:
+          type: integer
+          format: int32
+        height_pixels:
+          type: integer
+          format: int32
+        url:
+          type: string
+        description:
+          type: string
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+    ImageUpdateSC:
+      title: ImageUpdateSC
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        url:
+          type: string
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+        format:
+          type: string
+        width_pixels:
+          type: integer
+          format: int32
+        height_pixels:
+          type: integer
+          format: int32
+        description:
+          type: string
+    ImagedMomentSC:
+      title: ImagedMomentSC
+      required:
+      - video_reference_uuid
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+        observations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObservationSC'
+        image_references:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImageReferenceSC'
+        ancillary_data:
+          $ref: '#/components/schemas/CachedAncillaryDatumSC'
+        uuid:
+          type: string
+          format: uuid
+        last_updated_time:
+          type: string
+    ImagedMomentTimestampUpdateSC:
+      title: ImagedMomentTimestampUpdateSC
+      required:
+      - annotation_count
+      - timestamps_updated
+      type: object
+      properties:
+        annotation_count:
+          type: integer
+          format: int32
+        timestamps_updated:
+          type: integer
+          format: int32
+    IndexSC:
+      title: IndexSC
+      required:
+      - video_reference_uuid
+      type: object
+      properties:
+        video_reference_uuid:
+          type: string
+          format: uuid
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+        uuid:
+          type: string
+          format: uuid
+        last_updated:
+          type: string
+    IndexUpdateSC:
+      title: IndexUpdateSC
+      required:
+      - uuid
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+    MultiRequest:
+      title: MultiRequest
+      type: object
+      properties:
+        videoReferenceUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    MultiRequestCountSC:
+      title: MultiRequestCountSC
+      required:
+      - multi_request
+      - count
+      type: object
+      properties:
+        multi_request:
+          $ref: '#/components/schemas/MultiRequestSC'
+        count:
+          type: integer
+          format: int64
+    MultiRequestSC:
+      title: MultiRequestSC
+      type: object
+      properties:
+        video_reference_uuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    NotFound:
+      title: NotFound
+      required:
+      - message
+      - responseCode
+      type: object
+      properties:
+        message:
+          type: string
+        responseCode:
+          type: integer
+          format: int32
+    ObservationSC:
+      title: ObservationSC
+      required:
+      - concept
+      type: object
+      properties:
+        concept:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+        group:
+          type: string
+        activity:
+          type: string
+        observer:
+          type: string
+        observation_timestamp:
+          type: string
+        associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociationSC'
+        uuid:
+          type: string
+          format: uuid
+        last_updated_time:
+          type: string
+    ObservationUpdateSC:
+      title: ObservationUpdateSC
+      type: object
+      properties:
+        concept:
+          type: string
+        observer:
+          type: string
+        activity:
+          type: string
+        group:
+          type: string
+        duration_millis:
+          type: integer
+          format: int64
+        observation_timestamp:
+          type: string
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+    ObservationsUpdate:
+      title: ObservationsUpdate
+      type: object
+      properties:
+        observationUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        concept:
+          type: string
+        observer:
+          type: string
+        activity:
+          type: string
+        group:
+          type: string
+    QueryConstraints:
+      title: QueryConstraints
+      type: object
+      properties:
+        videoReferenceUuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        concepts:
+          type: array
+          items:
+            type: string
+        observers:
+          type: array
+          items:
+            type: string
+        groups:
+          type: array
+          items:
+            type: string
+        activities:
+          type: array
+          items:
+            type: string
+        minDepth:
+          type: number
+          format: double
+        maxDepth:
+          type: number
+          format: double
+        minLat:
+          type: number
+          format: double
+        maxLat:
+          type: number
+          format: double
+        minLon:
+          type: number
+          format: double
+        maxLon:
+          type: number
+          format: double
+        minTimestamp:
+          type: string
+        maxTimestamp:
+          type: string
+        linkName:
+          type: string
+        linkValue:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        data:
+          type: boolean
+        missionContacts:
+          type: array
+          items:
+            type: string
+        platformName:
+          type: string
+        missionId:
+          type: string
+    QueryConstraintsResponseSC_Count:
+      title: QueryConstraintsResponseSC_Count
+      required:
+      - query_constraints
+      - content
+      type: object
+      properties:
+        query_constraints:
+          $ref: '#/components/schemas/QueryConstraintsSC'
+        content:
+          $ref: '#/components/schemas/Count'
+    QueryConstraintsResponseSC_DepthHistogramSC:
+      title: QueryConstraintsResponseSC_DepthHistogramSC
+      required:
+      - query_constraints
+      - content
+      type: object
+      properties:
+        query_constraints:
+          $ref: '#/components/schemas/QueryConstraintsSC'
+        content:
+          $ref: '#/components/schemas/DepthHistogramSC'
+    QueryConstraintsResponseSC_GeographicRangeSC:
+      title: QueryConstraintsResponseSC_GeographicRangeSC
+      required:
+      - query_constraints
+      - content
+      type: object
+      properties:
+        query_constraints:
+          $ref: '#/components/schemas/QueryConstraintsSC'
+        content:
+          $ref: '#/components/schemas/GeographicRangeSC'
+    QueryConstraintsResponseSC_Seq_AnnotationSC:
+      title: QueryConstraintsResponseSC_Seq_AnnotationSC
+      required:
+      - query_constraints
+      type: object
+      properties:
+        query_constraints:
+          $ref: '#/components/schemas/QueryConstraintsSC'
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnnotationSC'
+    QueryConstraintsResponseSC_TimeHistogramSC:
+      title: QueryConstraintsResponseSC_TimeHistogramSC
+      required:
+      - query_constraints
+      - content
+      type: object
+      properties:
+        query_constraints:
+          $ref: '#/components/schemas/QueryConstraintsSC'
+        content:
+          $ref: '#/components/schemas/TimeHistogramSC'
+    QueryConstraintsSC:
+      title: QueryConstraintsSC
+      type: object
+      properties:
+        video_reference_uuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        concepts:
+          type: array
+          items:
+            type: string
+        observers:
+          type: array
+          items:
+            type: string
+        groups:
+          type: array
+          items:
+            type: string
+        activities:
+          type: array
+          items:
+            type: string
+        min_depth:
+          type: number
+          format: double
+        max_depth:
+          type: number
+          format: double
+        min_lat:
+          type: number
+          format: double
+        max_lat:
+          type: number
+          format: double
+        min_lon:
+          type: number
+          format: double
+        max_lon:
+          type: number
+          format: double
+        min_timestamp:
+          type: string
+        max_timestamp:
+          type: string
+        link_name:
+          type: string
+        link_value:
+          type: string
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        data:
+          type: boolean
+        mission_contacts:
+          type: array
+          items:
+            type: string
+        platform_name:
+          type: string
+        mission_id:
+          type: string
+    RenameConcept:
+      title: RenameConcept
+      required:
+      - new
+      - old
+      type: object
+      properties:
+        new:
+          type: string
+        old:
+          type: string
+    RenameCountSC:
+      title: RenameCountSC
+      required:
+      - old_concept
+      - new_concept
+      - count
+      type: object
+      properties:
+        old_concept:
+          type: string
+        new_concept:
+          type: string
+        count:
+          type: integer
+          format: int64
+    ServerError:
+      title: ServerError
+      required:
+      - message
+      - responseCode
+      type: object
+      properties:
+        message:
+          type: string
+        responseCode:
+          type: integer
+          format: int32
+    TimeHistogramSC:
+      title: TimeHistogramSC
+      type: object
+      properties:
+        bins_min:
+          type: array
+          items:
+            type: string
+        bins_max:
+          type: array
+          items:
+            type: string
+        values:
+          type: array
+          items:
+            type: integer
+            format: int32
+    Unauthorized:
+      title: Unauthorized
+      required:
+      - message
+      - responseCode
+      type: object
+      properties:
+        message:
+          type: string
+        responseCode:
+          type: integer
+          format: int32
+    VideoTimestampSC:
+      title: VideoTimestampSC
+      type: object
+      properties:
+        timecode:
+          type: string
+        elapsed_time_millis:
+          type: integer
+          format: int64
+        recorded_timestamp:
+          type: string
+        video_reference_uuid:
+          type: string
+          format: uuid
+    WindowRequestSC:
+      title: WindowRequestSC
+      required:
+      - imaged_moment_uuid
+      - window_millis
+      type: object
+      properties:
+        video_reference_uuids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        imaged_moment_uuid:
+          type: string
+          format: uuid
+        window_millis:
+          type: integer
+          format: int64
+  securitySchemes:
+    httpAuth:
+      type: http
+      scheme: bearer

@@ -1,20 +1,17 @@
 package org.mbari.charybdis.services;
 
-import io.helidon.config.Config;
-
-import org.mbari.jcommons.util.Logging;
-import org.mbari.vars.core.util.AsyncUtils;
-import org.mbari.vars.services.NoopAuthService;
-import org.mbari.vars.services.impl.vampiresquid.v1.VamService;
-import org.mbari.vars.services.impl.vampiresquid.v1.VamWebServiceFactory;
-import org.mbari.vars.services.model.Annotation;
-import org.mbari.vars.services.model.Media;
+import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.mbari.charybdis.etc.rxjava.AsyncUtils;
+import org.mbari.vars.annosaurus.sdk.r1.models.Annotation;
+import org.mbari.vars.vampiresquid.sdk.r1.MediaService;
+import org.mbari.vars.vampiresquid.sdk.r1.models.Media;
 
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -23,53 +20,56 @@ import java.util.stream.Collectors;
  */
 public class VampireSquid {
 
-    private final VamService service;
-    private final Logging log = new Logging(getClass());
+    private final MediaService service;
+    private final Duration timeout;
 
-    public VampireSquid(Config config) {
-        var endpoint = config.get("media.service.url")
-                .asString()
-                .orElse("http://localhost:8082");
-        var timeout = config.get("media.service.timeout")
-                .as(Duration.class)
-                .orElse(Duration.ofSeconds(30));
-        var authService = new NoopAuthService();
-        var serviceFactory = new VamWebServiceFactory(endpoint, timeout);
-        service = new VamService(serviceFactory, authService);
+    public VampireSquid(MediaService service, Duration timeout) {
+        this.service = service;
+        this.timeout = timeout;
     }
 
-    public CompletableFuture<List<Media>> findMediaForAnnotations(List<Annotation> annotations) {
+    public MediaService getService() {
+        return service;
+    }
+
+    public List<Media> findMediaForAnnotations(List<Annotation> annotations) {
         var mediaUuids = annotations.stream()
                 .map(Annotation::getVideoReferenceUuid)
                 .distinct()
                 .collect(Collectors.toList());
 
-        log.atInfo().log("Starting lookup of " + mediaUuids.size() + " media");
+        Log.info("Starting lookup of " + mediaUuids.size() + " media");
 
-        return AsyncUtils.collectAll(mediaUuids, service::findByUuid)
-                .exceptionally( e -> {
-                    log.atWarn().withCause(e).log(() -> "Failed to fetch media");
-                    return Collections.emptyList();
-                })
-                .thenApply(ArrayList::new);
+        try {
+            return AsyncUtils.collectAll(mediaUuids, service::findByUuid)
+                    .exceptionally( e -> {
+                        Log.warn("Failed to fetch media", e);
+                        return Collections.emptyList();
+                    })
+                    .thenApply(ArrayList::new)
+                    .get(timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public CompletableFuture<List<Media>> findMediaByVideoSequenceName(String videoSequencename) {
-        return service.findByVideoSequenceName(videoSequencename)
-                .exceptionally(e -> {
-                    log.atWarn().withCause(e).log(() -> "Failed to fetch media for " + videoSequencename);
-                    return Collections.emptyList();
-                })
-                .thenApply(ArrayList::new);
+    public List<Media> findMediaByVideoSequenceName(String videoSequencename) {
+        try {
+            return service.findByVideoSequenceName(videoSequencename).get(timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (Exception e) {
+            Log.warn("Failed to fetch media for videosequence named " + videoSequencename, e);
+            throw new RuntimeException(e);
+        }
+
     }
 
-    public CompletableFuture<List<Media>> findMediaByVideoFileName(String videoFileName) {
-        return service.findByFilename(videoFileName)
-            .exceptionally(e -> {
-                log.atWarn().withCause(e).log(() -> "Failed to fetch media with filename of " + videoFileName);
-                return Collections.emptyList();
-            })
-            .thenApply(ArrayList::new);
+    public List<Media> findMediaByVideoFileName(String videoFileName) {
+        try {
+            return service.findByFilename(videoFileName).get(timeout.toSeconds(), TimeUnit.SECONDS);
+        } catch (Exception e) {
+            Log.warn("Failed to fetch media for file named " + videoFileName, e);
+            throw new RuntimeException(e);
+        }
     }
 
 }

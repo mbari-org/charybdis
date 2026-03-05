@@ -1,41 +1,23 @@
 package org.mbari.charybdis.services;
 
-import com.fatboyindustrial.gsonjavatime.Converters;
-import com.github.mizosoft.methanol.Methanol;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.helidon.config.Config;
+import io.quarkus.logging.Log;
+import org.mbari.charybdis.etc.rxjava.Pager;
+import org.mbari.vars.annosaurus.sdk.r1.AnnotationService;
+import org.mbari.vars.annosaurus.sdk.r1.models.Annotation;
+import org.mbari.vars.annosaurus.sdk.r1.models.AnnotationCount;
+import org.mbari.vars.annosaurus.sdk.r1.models.ConceptCount;
 
-import org.mbari.jcommons.util.Logging;
-import org.mbari.vars.services.NoopAuthService;
-import org.mbari.vars.services.Pager;
-import org.mbari.vars.services.gson.AnnotationCreator;
-import org.mbari.vars.services.gson.ByteArrayConverter;
-import org.mbari.vars.services.gson.DurationConverter;
-import org.mbari.vars.services.gson.TimecodeConverter;
-import org.mbari.vars.services.impl.annosaurus.v1.AnnoService;
-import org.mbari.vars.services.impl.annosaurus.v1.AnnoWebServiceFactory;
-import org.mbari.vars.services.model.Annotation;
-import org.mbari.vars.services.model.AnnotationCount;
-import org.mbari.vars.services.model.ConceptCount;
-import org.mbari.vars.services.model.ImagedMoment;
-import org.mbari.vcr4j.time.Timecode;
 
-import java.io.IOException;
-
-import java.net.URI;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 
 /**
@@ -44,64 +26,19 @@ import java.util.function.Function;
  */
 public class Annosaurus {
 
-    private Gson gson;
-    private final String endpoint;
-    private final AnnoService service;
-    private final Logging log = new Logging(getClass());
-    private final Methanol httpClient;
+    private final AnnotationService service;
     private final Duration timeout;
     private final Integer pageSize;
 
-    public Annosaurus(Config config) {
+    public Annosaurus(AnnotationService service, Duration timeout, Integer pageSize) {
+        this.service = service;
+        this.timeout = timeout;
+        this.pageSize = pageSize;
         // Trim off trailing any trailing slashes
-        var tempEndpoint = config.get("annotation.service.url").asString().orElse("http://localhost:8084");
-        endpoint = tempEndpoint.endsWith("/") ? tempEndpoint.substring(0, tempEndpoint.length() - 1) : tempEndpoint;
-
-        timeout = config.get("media.service.timeout").as(Duration.class).orElse(Duration.ofSeconds(30));
-        pageSize = config.get("annotation.service.pagesize").asInt().orElse(2000);
-        var authService = new NoopAuthService(); // Read-only
-        var serviceFactory = new AnnoWebServiceFactory(endpoint, timeout);
-        service = new AnnoService(serviceFactory, authService);
-        httpClient = Methanol.newBuilder()
-                .userAgent("Charybdis")
-                .readTimeout(timeout)
-                .connectTimeout(timeout)
-                .autoAcceptEncoding(true)
-                .build();
     }
 
-    public Gson getGson() {
-
-        if (gson == null) {
-
-            GsonBuilder gsonBuilder = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                    .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                    .registerTypeAdapter(ImagedMoment.class, new AnnotationCreator())
-                    .registerTypeAdapter(Duration.class, new DurationConverter())
-                    .registerTypeAdapter(Timecode.class, new TimecodeConverter())
-                    .registerTypeAdapter(byte[].class, new ByteArrayConverter());
-
-            // Register java.time.Instant
-            gson = Converters.registerInstant(gsonBuilder)
-                    .create();
-        }
-        return gson;
-    }
-
-    public List<Annotation> jsonToAnnotations(String json) {
-        return Arrays.asList(getGson().fromJson(json, Annotation[].class));
-    }
-
-    public CompletableFuture<List<Annotation>> findByLinkNameAndLinkValue(String linkName, String linkValue) {
-        var url = endpoint + "/fast/details/" + linkName + "/" + linkValue + "?data=true";
-        return call(url, this::jsonToAnnotations);
-    }
-
-    public CompletableFuture<List<Annotation>> findByLinkNameAndLinkValue(String linkName, String linkValue, long limit, long offset) {
-        var url = endpoint + "/fast/details/" + linkName + "/" + linkValue + "?data=true&limit=" + limit + "&offset=" + offset;
-        return call(url, this::jsonToAnnotations);
+    public AnnotationService getService() {
+        return service;
     }
 
     public CompletableFuture<AnnotationCount> countByVideoReferenceUuid(UUID videoReferenceUuid) {
@@ -109,40 +46,43 @@ public class Annosaurus {
     }
 
     public CompletableFuture<List<Annotation>> findByVideoReferenceUuid(UUID videoReferenceUuid) {
-        var url = endpoint + "/fast/videoreference/" + videoReferenceUuid + "?data=true";
-        return call(url, this::jsonToAnnotations);
+        return service.findAnnotations(videoReferenceUuid);
     }
 
     public CompletableFuture<List<Annotation>> findByVideoReferenceUuid(UUID videoReferenceUuid, long limit, long offset) {
-        var url = endpoint + "/fast/videoreference/" + videoReferenceUuid + "?data=true&limit=" + limit + "&offset=" + offset;
-        return call(url, this::jsonToAnnotations);
+        return service.findAnnotations(videoReferenceUuid, limit, offset);
+    }
+
+    private static String encodeConcept(String concept) {
+        return URLEncoder.encode(concept, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     public CompletableFuture<ConceptCount> countByConcept(String concept) {
-        return service.countObservationsByConcept(concept);
+        return service.countObservationsByConcept(encodeConcept(concept));
     }
 
     public CompletableFuture<List<Annotation>> findByConcept(String concept, long limit, long offset)  {
-        return service.findByConcept(concept, limit, offset, true);
+        return service.findByConcept(encodeConcept(concept), limit, offset, true);
     }
 
     public CompletableFuture<List<Annotation>> findByConcept(String concept)  {
         // HACK: Page size is hard coded
+        var encoded = encodeConcept(concept);
         var annotations = new CopyOnWriteArrayList<Annotation>();
         var future = new CompletableFuture<List<Annotation>>();
 
         try {
-            var pager = countByConcept(concept).thenApply(conceptCount -> {
-                return new Pager<List<Annotation>>((limit, offset) -> {
+            var pager = service.countObservationsByConcept(encoded).thenApply(conceptCount -> {
+                return new Pager<>((Long limit, Long offset) -> {
                     try {
                         // TODO sort annotations by time?
-                        var annos =  service.findByConcept(concept, limit, offset, true)
+                        var annos =  service.findByConcept(encoded, limit, offset, true)
                                 .get(timeout.toMillis(), TimeUnit.MILLISECONDS);
-                        log.atInfo().log("Found " + annos.size() + " annotations");
+                        Log.info("Found " + annos.size() + " annotations");
                         return annos;
                     } catch (Exception e) {
-                        log.atWarn().withCause(e).log(() -> "Failed to fetch annotation for " +
-                                        concept + " (" + offset + "-" + (offset + limit) + ")");
+                        Log.warn("Failed to fetch annotation for " +
+                                encoded + " (" + offset + "-" + (offset + limit) + ")", e);
                         return Collections.emptyList();
                     }
                 }, conceptCount.getCount().longValue(), pageSize.longValue());
@@ -150,7 +90,7 @@ public class Annosaurus {
             }).get(timeout.toMillis(), TimeUnit.MILLISECONDS);
 
             pager.getObservable()
-                    .subscribe(annotations::addAll,
+                    .subscribe(xs -> annotations.addAll((Collection<? extends Annotation>) xs),
                             future::completeExceptionally,
                             () -> future.complete(annotations));
             pager.run();
@@ -162,63 +102,6 @@ public class Annosaurus {
         return future;
     }
 
-//    public CompletableFuture<ConceptCount> countByQueryConstraint(String queryConstraintJson) {
-//        var url = "/fast/count";
-//        callWithJsonBody(url, queryConstraintJson)
-//    }
 
-//    public CompletableFuture<List<ExtendedAnnotation>> findByQueryConstraints(String queryConstraintJson) {
-//        var annotations = new CopyOnWriteArrayList<Annotation>();
-//        var future = new CompletableFuture<List<Annotation>>();
-//        try {
-//
-//        }
-//        catch (Exception e) {
-//            future.completeExceptionally(e);
-//        }
-//    }
 
-    private <T> CompletableFuture<T> call(String url,
-                                          Function<String, T> bodyConverter) {
-        try {
-            var request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .build();
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            var json = response.body();
-            var annotations = bodyConverter.apply(json);
-            return CompletableFuture.completedFuture(annotations);
-        }
-        catch (IOException e) {
-            log.atWarn().withCause(e).log(() -> "Failed to communicate with annosaurus");
-            return CompletableFuture.failedFuture(e);
-        }
-        catch (Exception e) {
-            log.atWarn().withCause(e).log(() -> "Failed to convert json to annotations");
-            return CompletableFuture.failedFuture(e);
-        }
-    }
-
-    private <T> CompletableFuture<T> callWithJsonBody(String url,
-                                                  String jsonBody,
-                                                  Function<String, T> bodyConverter) {
-        try {
-            var request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
-                    .build();
-            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            var json = response.body();
-            var annotations = bodyConverter.apply(json);
-            return CompletableFuture.completedFuture(annotations);
-        }
-        catch (IOException e) {
-            log.atWarn().withCause(e).log(() -> "Failed to communicate with annosaurus");
-            return CompletableFuture.failedFuture(e);
-        }
-        catch (Exception e) {
-            log.atWarn().withCause(e).log(() -> "Failed to convert json to annotations");
-            return CompletableFuture.failedFuture(e);
-        }
-    }
 }
