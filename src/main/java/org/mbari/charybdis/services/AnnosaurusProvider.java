@@ -18,6 +18,9 @@ public class AnnosaurusProvider {
     ConfigurationService configurationService;
 
     @Inject
+    RazielConfig razielConfig;
+
+    @Inject
     AnnotationServiceConfig config;
 
     @Produces
@@ -25,7 +28,8 @@ public class AnnosaurusProvider {
     Annosaurus annosaurus() throws Exception {
         var timeout = config.getTimeout();
         var pageSize = config.getPageSize();
-        return configurationService.endpoints()
+        var useInternalUrls = razielConfig.useInternalUrls;
+        return configurationService.endpoints(useInternalUrls)
                 .thenApply(endpoints -> endpoints.stream()
                         .filter(e -> ENDPOINT_NAME.equalsIgnoreCase(e.name()))
                         .peek(e -> Log.info(ENDPOINT_NAME + " endpoint: " + e.url()))

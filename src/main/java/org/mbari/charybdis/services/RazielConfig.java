@@ -9,6 +9,9 @@ public class RazielConfig {
     @ConfigProperty(name = "raziel.service.url")
     String endpoint;
 
+    @ConfigProperty(name = "raziel.use-internal-urls")
+    Boolean useInternalUrls;
+
     /**
      * Kiota needs the URL to be without the trailing "/v1" or "/config" suffix. THis is a HACK to adapt the URL
      * accordingly.

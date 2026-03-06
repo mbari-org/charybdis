@@ -21,4 +21,5 @@ public class ConfigurationServiceProvider {
         Log.info("Connecting to Raziel at " + uri);
         return new RazielKiotaClient(uri);
     }
+
 }
