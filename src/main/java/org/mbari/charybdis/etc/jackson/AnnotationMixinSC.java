@@ -7,16 +7,16 @@ import org.mbari.vcr4j.VideoIndex;
 
 import java.time.Duration;
 
-public abstract class AnnotationMixin {
+public abstract class AnnotationMixinSC {
 
     @JsonIgnore
     abstract VideoIndex getVideoIndex();
 
     @JsonSerialize(using = DurationSerializer.class)
-    @JsonProperty("durationMillis")
+    @JsonProperty("duration_millis")
     abstract Duration getDuration();
 
     @JsonSerialize(using = DurationSerializer.class)
-    @JsonProperty("elapsedTimeMillis")
+    @JsonProperty("elapsed_time_millis")
     abstract Duration getElapsedTime();
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import java.time.Duration;
 
-public abstract class MediaMixin {
+public abstract class MediaMixinCC {
 
     @JsonSerialize(using = DurationSerializer.class)
     @JsonProperty("durationMillis")
