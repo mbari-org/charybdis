@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.mbari</groupId>
   <artifactId>charybdis</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <properties>
     <annosaurus.version>0.0.18</annosaurus.version>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>

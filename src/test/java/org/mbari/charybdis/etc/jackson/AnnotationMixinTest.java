@@ -22,7 +22,7 @@ class AnnotationMixinTest {
         objectMapper = new ObjectMapper();
         var simpleModule = new SimpleModule();
         simpleModule.addSerializer(Timecode.class, new TimecodeSerializer());
-        objectMapper.addMixIn(Annotation.class, AnnotationMixin.class);
+        objectMapper.addMixIn(Annotation.class, AnnotationMixinCC.class);
         objectMapper.registerModule(simpleModule);
     }
 
