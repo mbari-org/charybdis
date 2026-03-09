@@ -1,6 +1,7 @@
 package org.mbari.charybdis.etc.jackson;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,19 +16,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AnnotationMixinTest {
 
-    private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void setUp() {
-        objectMapper = new ObjectMapper();
+    @Test
+    void imageReferencesSerializedAndImagesOmittedCC() throws Exception {
+
+        var objectMapper = new ObjectMapper();
         var simpleModule = new SimpleModule();
         simpleModule.addSerializer(Timecode.class, new TimecodeSerializer());
         objectMapper.addMixIn(Annotation.class, AnnotationMixinCC.class);
         objectMapper.registerModule(simpleModule);
-    }
 
-    @Test
-    void imageReferencesSerializedAndImagesOmitted() throws Exception {
         var imageRef = new ImageReference();
         imageRef.setUrl(URI.create("http://example.com/image.jpg").toURL());
 
@@ -38,7 +36,32 @@ class AnnotationMixinTest {
         var node = objectMapper.readTree(json);
 
         assertFalse(node.has("images"), "images field should be omitted");
-        assertTrue(node.has("imageReferences") || node.has("image_references"),
+        assertTrue(node.has("imageReferences"),
+                "imageReferences field should be present");
+    }
+
+    @Test
+    void imageReferencesSerializedAndImagesOmittedSC() throws Exception {
+
+        var objectMapper = new ObjectMapper();
+        var simpleModule = new SimpleModule();
+        simpleModule.addSerializer(Timecode.class, new TimecodeSerializer());
+        objectMapper.addMixIn(Annotation.class, AnnotationMixinSC.class);
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+        objectMapper.registerModule(simpleModule);
+
+        var imageRef = new ImageReference();
+        imageRef.setUrl(URI.create("http://example.com/image.jpg").toURL());
+
+        var annotation = new Annotation();
+        annotation.setImageReferences(List.of(imageRef));
+
+        var json = objectMapper.writeValueAsString(annotation);
+        System.out.println(json);
+        var node = objectMapper.readTree(json);
+
+        assertFalse(node.has("images"), "images field should be omitted");
+        assertTrue(node.has("image_references"),
                 "imageReferences field should be present");
     }
 }
