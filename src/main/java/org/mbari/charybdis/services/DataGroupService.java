@@ -34,8 +34,8 @@ public class DataGroupService {
 
     private record MediaPage(UUID videoReferenceUuid, LimitOffset limitOffset) {}
 
-    public DataGroup findByConcept(String concept, long limit, long offset) {
-        return annosaurus.findByConcept(concept, limit, offset)
+    public DataGroup findByConcept(String concept, long limit, long offset, boolean data) {
+        return annosaurus.findByConcept(concept, limit, offset, data)
                 .thenApply( annos -> {
                     var media = vampireSquid.findMediaForAnnotations(annos);
                     return new DataGroup(annos, media);
@@ -43,17 +43,17 @@ public class DataGroupService {
                 .join();
     }
 
-    public DataGroup findByDive(String videoSequenceName, long limit, long offset) {
+    public DataGroup findByDive(String videoSequenceName, long limit, long offset, boolean data) {
         var media = vampireSquid.findMediaByVideoSequenceName(videoSequenceName);
-        return limitedRequest(media, limit, offset).join();
+        return limitedRequest(media, limit, offset, data).join();
     }
 
-    public DataGroup findByFilename(String filename, long limit, long offset) {
+    public DataGroup findByFilename(String filename, long limit, long offset, boolean data) {
         var media = vampireSquid.findMediaByVideoFileName(filename);
-        return limitedRequest(media, limit, offset).join();
+        return limitedRequest(media, limit, offset, data).join();
     }
 
-    public CompletableFuture<DataGroup> limitedRequest(List<Media> media, long limit, long offset) {
+    public CompletableFuture<DataGroup> limitedRequest(List<Media> media, long limit, long offset, boolean data) {
         var cumSum = new AtomicLong(0);
         var returned = new AtomicLong(0);
         var annotations = new CopyOnWriteArrayList<Annotation>();
@@ -80,7 +80,8 @@ public class DataGroupService {
                             .filter(mediaPage -> mediaPage.limitOffset().isOk())
                             .map(mediaPage -> service.findAnnotations(mediaPage.videoReferenceUuid(),
                                     mediaPage.limitOffset.limit(),
-                                    mediaPage.limitOffset.offset()).thenAccept(annotations::addAll))
+                                    mediaPage.limitOffset.offset(),
+                                    data).thenAccept(annotations::addAll))
                             .toList();
                     var array = stream.toArray(CompletableFuture[]::new);
                     return CompletableFuture.allOf(array);

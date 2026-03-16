@@ -61,11 +61,11 @@ public class Annosaurus {
         return service.countObservationsByConcept(encodeConcept(concept));
     }
 
-    public CompletableFuture<List<Annotation>> findByConcept(String concept, long limit, long offset)  {
-        return service.findByConcept(encodeConcept(concept), limit, offset, true);
+    public CompletableFuture<List<Annotation>> findByConcept(String concept, long limit, long offset, boolean data)  {
+        return service.findByConcept(encodeConcept(concept), limit, offset, data);
     }
 
-    public CompletableFuture<List<Annotation>> findByConcept(String concept)  {
+    public CompletableFuture<List<Annotation>> findByConcept(String concept, boolean data)  {
         // HACK: Page size is hard coded
         var encoded = encodeConcept(concept);
         var annotations = new CopyOnWriteArrayList<Annotation>();
@@ -76,7 +76,7 @@ public class Annosaurus {
                 return new Pager<>((Long limit, Long offset) -> {
                     try {
                         // TODO sort annotations by time?
-                        var annos =  service.findByConcept(encoded, limit, offset, true)
+                        var annos =  service.findByConcept(encoded, limit, offset, data)
                                 .get(timeout.toMillis(), TimeUnit.MILLISECONDS);
                         Log.info("Found " + annos.size() + " annotations");
                         return annos;
