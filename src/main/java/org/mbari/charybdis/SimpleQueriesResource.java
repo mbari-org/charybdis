@@ -16,10 +16,10 @@ public class SimpleQueriesResource {
     @Path("/concept/{concept}")
     @Produces(MediaType.APPLICATION_JSON)
     public DataGroup queryByConcept(@PathParam("concept") String concept,
-                                    @DefaultValue("10000") @QueryParam("limit") Integer limit,
+                                    @DefaultValue("50000") @QueryParam("limit") Integer limit,
                                     @DefaultValue("0") @QueryParam("offset") Integer offset,
                                     @DefaultValue("true") @QueryParam("data") Boolean data) {
-        limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
+        limit = limit == null || limit < 0 || limit > 50000 ? 50000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByConcept(concept, limit, offset, data);
     }
@@ -28,10 +28,10 @@ public class SimpleQueriesResource {
     @Path("/dive/{videoSequenceName}")
     @Produces(MediaType.APPLICATION_JSON)
     public DataGroup queryByDive(@PathParam("videoSequenceName") String videoSequenceName,
-                                 @DefaultValue("10000") @QueryParam("limit") Integer limit,
+                                 @DefaultValue("50000") @QueryParam("limit") Integer limit,
                                  @DefaultValue("0") @QueryParam("offset") Integer offset,
                                  @DefaultValue("true") @QueryParam("data") Boolean data) {
-        limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
+        limit = limit == null || limit < 0 || limit > 50000 ? 50000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByDive(videoSequenceName, limit, offset, data);
     }
@@ -40,10 +40,10 @@ public class SimpleQueriesResource {
     @Path("/file/{videoFileName}")
     @Produces(MediaType.APPLICATION_JSON)
     public DataGroup queryByVideoFileName(@PathParam("videoFileName") String videoFileName,
-                                         @DefaultValue("10000") @QueryParam("limit") Integer limit,
+                                         @DefaultValue("50000") @QueryParam("limit") Integer limit,
                                          @DefaultValue("0") @QueryParam("offset") Integer offset,
                                           @DefaultValue("true") @QueryParam("data") Boolean data) {
-        limit = limit == null || limit < 0 || limit > 10000 ? 10000 : limit;
+        limit = limit == null || limit < 0 || limit > 50000 ? 50000 : limit;
         offset = offset == null || offset < 0 ? 0 : offset;
         return dataGroupService.findByFilename(videoFileName, limit, offset, data);
     }
