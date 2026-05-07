@@ -6,10 +6,10 @@ repo_name = "mbari-org/charybdis"
 repo_url = "https://github.com/mbari-org/charybdis"
 nav = [
     { "Home" = "index.md" },
+    { "Getting Started" = "getting-started.md" },
     { "Architecture" = "architecture.md" },
-    { "Deployment" = "deployment.md" },
-    { "Configuration" = "configuration.md" },
-    { "Building" = "build.md" },
+    { "Services" = "services.md" },
+    { "Applications" = "applications.md" }
 ]
 
 
