@@ -2,8 +2,8 @@
 site_name = "Charybdis"
 site_description = "Charybdis: A query aggregation and transformation service for VARS data"
 site_author = "Brian Schlining"
-repo_name = "mbari-org/vars"
-repo_url = "https://github.com/mbari-org/vars"
+repo_name = "mbari-org/charybdis"
+repo_url = "https://github.com/mbari-org/charybdis"
 nav = [
     { "Home" = "index.md" },
     { "Architecture" = "architecture.md" },
