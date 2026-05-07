@@ -28,7 +28,7 @@ docker run -i --rm -p 8080:8080 \
 | Property | Default | Description |
 |---|---|---|
 | `raziel.service.url` | `http://localhost:8085` | Raziel endpoint for service discovery |
-| `raziel.use-internal-urls` | `false` | Use Raziel's internal service URLs instead of external ones |
+| `raziel.use-internal-urls` | `false` | Use Raziel's internal service URLs (akak docker container urls) instead of external ones |
 | `annotation.service.timeout` | `PT2M` (2 minutes) | Timeout for Annosaurus requests |
 | `annotation.service.pagesize` | `1000` | Page size for paginated Annosaurus fetches |
 | `media.service.timeout` | `PT10S` (10 seconds) | Timeout for Vampire Squid requests |
@@ -37,8 +37,4 @@ docker run -i --rm -p 8080:8080 \
 
 ## JSON Naming Strategy
 
-By default, Charybdis returns camelCase JSON property names (e.g., `videoReferenceUuid`, `recordedTimestamp`). To switch to snake_case (e.g., `video_reference_uuid`, `recorded_timestamp`):
-
-```shell
--e CHARYBDIS_JACKSON_PROPERTY_NAMING_STRATEGY=SNAKE_CASE
-```
+By default, Charybdis returns camelCase JSON property names (e.g., `videoReferenceUuid`, `recordedTimestamp`). We also provide docker build (mbari/charybdis_sc) to return snake_case (e.g., `video_reference_uuid`, `recorded_timestamp`),
