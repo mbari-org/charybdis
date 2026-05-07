@@ -1,0 +1,50 @@
+[project]
+site_name = "Charybdis"
+site_description = "Charybdis: A query aggregation and transformation service for VARS data"
+site_author = "Brian Schlining"
+repo_name = "mbari-org/vars"
+repo_url = "https://github.com/mbari-org/vars"
+nav = [
+    { "Home" = "index.md" },
+    { "Architecture" = "architecture.md" },
+    { "Deployment" = "deployment.md" },
+    { "Configuration" = "configuration.md" },
+    { "Building" = "build.md" },
+]
+
+
+[project.theme]
+name = "material"
+logo = "assets/images/logo-mbari-3b.png"
+features = [
+    "navigation.instant",
+    "navigation.indexes",
+    "navigation.sections",
+    "navigation.top",
+    "navigation.tracking",
+    "content.code.copy",
+    "search.highlight",
+]
+icon.repo = "fontawesome/brands/github"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preferences"
+
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
