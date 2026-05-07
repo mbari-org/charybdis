@@ -7,6 +7,7 @@ Any `application.properties` key can be overridden at runtime by setting an envi
 | Property | Environment variable |
 |---|---|
 | `raziel.service.url` | `RAZIEL_SERVICE_URL` |
+| `raziel.use-internal-urls` | `RAZIEL_USE_INTERNAL_URLS` |
 | `annotation.service.timeout` | `ANNOTATION_SERVICE_TIMEOUT` |
 | `annotation.service.pagesize` | `ANNOTATION_SERVICE_PAGESIZE` |
 | `media.service.timeout` | `MEDIA_SERVICE_TIMEOUT` |
@@ -27,6 +28,7 @@ docker run -i --rm -p 8080:8080 \
 | Property | Default | Description |
 |---|---|---|
 | `raziel.service.url` | `http://localhost:8085` | Raziel endpoint for service discovery |
+| `raziel.use-internal-urls` | `false` | Use Raziel's internal service URLs instead of external ones |
 | `annotation.service.timeout` | `PT2M` (2 minutes) | Timeout for Annosaurus requests |
 | `annotation.service.pagesize` | `1000` | Page size for paginated Annosaurus fetches |
 | `media.service.timeout` | `PT10S` (10 seconds) | Timeout for Vampire Squid requests |
