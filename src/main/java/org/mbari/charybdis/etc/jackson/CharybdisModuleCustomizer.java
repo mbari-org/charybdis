@@ -1,44 +1,45 @@
 package org.mbari.charybdis.etc.jackson;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.quarkus.jackson.ObjectMapperCustomizer;
-import jakarta.annotation.Priority;
+import io.quarkus.jackson.JsonMapperBuilderCustomizer;
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.mbari.vars.annosaurus.sdk.r1.models.Annotation;
 import org.mbari.vars.vampiresquid.sdk.r1.models.Media;
 import org.mbari.vcr4j.time.Timecode;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 
 @Singleton
-@Priority(1)
-public class CharybdisModuleCustomizer implements ObjectMapperCustomizer {
+public class CharybdisModuleCustomizer implements JsonMapperBuilderCustomizer {
 
     @ConfigProperty(name = "charybdis.jackson.property-naming-strategy", defaultValue = "LOWER_CAMEL_CASE")
     String propertyNamingStrategy;
 
-    public void customize(ObjectMapper mapper) {
+    @Override
+    public void customize(JsonMapper.Builder builder) {
         var simpleModule = new SimpleModule();
         simpleModule.addSerializer(Timecode.class, new TimecodeSerializer());
         simpleModule.addSerializer(byte[].class, new ByteArraySerializer());
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        builder.changeDefaultPropertyInclusion(incl -> incl
+                .withValueInclusion(JsonInclude.Include.NON_NULL)
+                .withContentInclusion(JsonInclude.Include.NON_NULL));
 
         // Quarkus will set strategy for most of the JSON returns. However, the mixins are added
-        // after the face and explicity set the names. Here we just chane the mixin based on the
+        // after the fact and explicitly set the names. Here we just change the mixin based on the
         // strategy.
         if (propertyNamingStrategy.equals("SNAKE_CASE")) {
-            mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
-            mapper.addMixIn(Annotation.class, AnnotationMixinSC.class);
-            mapper.addMixIn(Media.class, MediaMixinSC.class);
+            builder.propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+            builder.addMixIn(Annotation.class, AnnotationMixinSC.class);
+            builder.addMixIn(Media.class, MediaMixinSC.class);
         }
         else {
-            mapper.addMixIn(Annotation.class, AnnotationMixinCC.class);
-            mapper.addMixIn(Media.class, MediaMixinCC.class);
+            builder.addMixIn(Annotation.class, AnnotationMixinCC.class);
+            builder.addMixIn(Media.class, MediaMixinCC.class);
         }
 
-        mapper.registerModule(simpleModule);
+        builder.addModule(simpleModule);
     }
 }
