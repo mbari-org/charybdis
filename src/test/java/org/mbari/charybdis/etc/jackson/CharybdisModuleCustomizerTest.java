@@ -1,8 +1,8 @@
 package org.mbari.charybdis.etc.jackson;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import org.junit.jupiter.api.Test;
 import org.mbari.vars.annosaurus.sdk.r1.models.Annotation;
 import org.mbari.vars.vampiresquid.sdk.r1.models.Media;
@@ -21,10 +21,9 @@ class CharybdisModuleCustomizerTest {
         Field f = CharybdisModuleCustomizer.class.getDeclaredField("propertyNamingStrategy");
         f.setAccessible(true);
         f.set(customizer, strategy);
-        var mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        customizer.customize(mapper);
-        return mapper;
+        var builder = JsonMapper.builder();
+        customizer.customize(builder);
+        return builder.build();
     }
 
     private Annotation buildAnnotation() {

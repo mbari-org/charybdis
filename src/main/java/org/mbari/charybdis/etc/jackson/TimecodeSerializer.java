@@ -1,10 +1,8 @@
 package org.mbari.charybdis.etc.jackson;
 
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.databind.ser.std.StdSerializer;
 import org.mbari.vcr4j.time.Timecode;
-
-import java.io.IOException;
+import tools.jackson.databind.SerializationContext;
 
 public class TimecodeSerializer extends StdSerializer<Timecode> {
 
@@ -17,7 +15,7 @@ public class TimecodeSerializer extends StdSerializer<Timecode> {
     }
 
     @Override
-    public void serialize(Timecode timecode, com.fasterxml.jackson.core.JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(Timecode timecode, tools.jackson.core.JsonGenerator jsonGenerator, SerializationContext serializerProvider) {
         jsonGenerator.writeString(timecode.toString());
     }
 

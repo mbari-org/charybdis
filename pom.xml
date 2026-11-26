@@ -7,16 +7,15 @@
   <version>1.0.10</version>
   <properties>
     <annosaurus.version>0.1.0</annosaurus.version>
-    <compiler-plugin.version>3.12.1</compiler-plugin.version>
+    <compiler-plugin.version>3.16.0</compiler-plugin.version>
     <jcommons.version>0.0.8</jcommons.version>
     <maven.compiler.release>25</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.40.1.2</quarkus.platform.version>
+    <quarkus.platform.version>4.0.1</quarkus.platform.version>
     <raziel.sdk.version>0.0.8</raziel.sdk.version>
-    <slf4j.version>2.0.20</slf4j.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.6.1</surefire-plugin.version>
     <vampiresquid.version>0.0.15</vampiresquid.version>
@@ -85,11 +84,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
+      <artifactId>quarkus-junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

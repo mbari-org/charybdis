@@ -1,10 +1,9 @@
 package org.mbari.charybdis.etc.jackson;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.databind.SerializationContext;
 
-import java.io.IOException;
 import java.util.HexFormat;
 
 public class ByteArraySerializer extends StdSerializer<byte[]> {
@@ -20,7 +19,7 @@ public class ByteArraySerializer extends StdSerializer<byte[]> {
     }
 
     @Override
-    public void serialize(byte[] bytes, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(byte[] bytes, JsonGenerator jsonGenerator, SerializationContext serializerProvider) {
         jsonGenerator.writeString(hexFormat.formatHex(bytes));
     }
 

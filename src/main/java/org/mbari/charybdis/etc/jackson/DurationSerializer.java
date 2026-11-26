@@ -1,6 +1,7 @@
 package org.mbari.charybdis.etc.jackson;
 
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.databind.SerializationContext;
 
 import java.time.Duration;
 
@@ -15,7 +16,7 @@ public class DurationSerializer extends StdSerializer<Duration> {
         }
 
         @Override
-        public void serialize(Duration duration, com.fasterxml.jackson.core.JsonGenerator jsonGenerator, com.fasterxml.jackson.databind.SerializerProvider serializerProvider) throws java.io.IOException {
+        public void serialize(Duration duration, tools.jackson.core.JsonGenerator jsonGenerator, SerializationContext serializerProvider) {
             jsonGenerator.writeNumber(duration.toMillis());
         }
 }
